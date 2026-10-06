@@ -26,6 +26,7 @@ class Frontend {
 	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_filter( 'wc_get_template', array( $this, 'quantity_template' ), 10, 3 );
 
 		// Simple products: inside the form around the button.
 		add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'maybe_render_before' ), 5 );
@@ -92,6 +93,43 @@ class Frontend {
 			&& $product->is_type( array( 'simple', 'variable' ) )
 			&& ! $product->is_sold_individually()
 			&& (bool) Tiers::for_product( $product );
+	}
+
+	/**
+	 * Quantity of the default tier, used as the start value of the hidden field.
+	 *
+	 * @param \WC_Product $product Product.
+	 * @return int
+	 */
+	public static function default_quantity( $product ) {
+		$tiers = Tiers::for_product( $product );
+		foreach ( $tiers as $tier ) {
+			if ( ! empty( $tier['default'] ) ) {
+				return (int) $tier['qty'];
+			}
+		}
+		return $tiers ? (int) $tiers[0]['qty'] : 1;
+	}
+
+	/**
+	 * Swaps the visible quantity field for a hidden one on the product page of
+	 * a bundle product. The cart page and other products keep their own field.
+	 *
+	 * @param string $template      Template path WooCommerce found.
+	 * @param string $template_name Template name.
+	 * @param array  $args          Template variables.
+	 * @return string
+	 */
+	public function quantity_template( $template, $template_name, $args ) {
+		global $product;
+		if ( 'global/quantity-input.php' !== $template_name || ! is_array( $args ) || ! isset( $args['input_name'] ) || 'quantity' !== $args['input_name'] ) {
+			return $template;
+		}
+		if ( ! self::supports( $product ) ) {
+			return $template;
+		}
+		$path = locate_template( 'bundletiers/quantity-hidden.php' );
+		return $path ? $path : BUNDLETIERS_DIR . 'templates/bundletiers/quantity-hidden.php';
 	}
 
 	/**

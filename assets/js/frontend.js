@@ -80,10 +80,6 @@
 	Selector.prototype.bind = function () {
 		var self = this;
 
-		if ( this.form ) {
-			this.form.classList.add( 'bt-active' );
-		}
-
 		this.el.addEventListener( 'change', function ( e ) {
 			if ( e.target.classList.contains( 'bt-radio' ) ) {
 				self.setQuantity( parseInt( e.target.value, 10 ) );

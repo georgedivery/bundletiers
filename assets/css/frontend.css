@@ -100,6 +100,3 @@
 .bt-selector.bt-style-list .bt-full { grid-column: 2; grid-row: 2; text-align: right; }
 .bt-selector.bt-style-list .bt-unit,
 .bt-selector.bt-style-list .bt-save { grid-column: 1; }
-
-/* Quantity is chosen through the tiers, so hide the stepper (script adds .bt-active). */
-form.bt-active .quantity { display: none !important; }

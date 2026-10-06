@@ -17,5 +17,6 @@ All notable changes to BundleTiers are listed here. The format follows
   and stock support. The template can be overridden in the theme.
 - Bundle shown in the cart, checkout, mini-cart and on order lines.
 - Optional rule that keeps coupons off bundle items.
+- On the product page of a bundle product the quantity field is replaced by a hidden input (set to the default tier), through the template, not with CSS. The cart page and other products keep their normal field. Template: `bundletiers/quantity-hidden.php`.
 - HPOS and Cart/Checkout Blocks compatibility declared.
 - English source strings with a Bulgarian (bg_BG) translation.
