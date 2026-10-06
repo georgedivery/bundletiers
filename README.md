@@ -1,5 +1,7 @@
 # BundleTiers – Bundle Discounts for WooCommerce
 
+![BundleTiers bundle selector on a product page](screenshot.png)
+
 BundleTiers adds quantity bundles to your WooCommerce product page: **1 pc, 2 pcs, 3 pcs**, each with its own price, saving and badge. The discount is calculated again in the cart and saved on the order, so the price the customer sees is the price they pay.
 
 ## Key features
