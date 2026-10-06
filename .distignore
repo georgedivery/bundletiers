@@ -1,0 +1,10 @@
+.git
+.gitignore
+.distignore
+phpcs.xml.dist
+PLAN.md
+CHANGELOG.md
+tests
+node_modules
+vendor
+.DS_Store

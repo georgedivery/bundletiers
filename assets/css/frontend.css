@@ -1,0 +1,105 @@
+.bt-selector {
+	--bt-accent: #111;
+	--bt-border: #d5d7dd;
+	--bt-border-width: 1px;
+	--bt-bg: #fff;
+	--bt-text: inherit;
+	--bt-muted: #6b7280;
+	--bt-radius: 4px;
+	--bt-gap: 8px;
+	border: 0;
+	margin: 0 0 1em;
+	padding: 0;
+	min-width: 0;
+	color: var(--bt-text);
+}
+
+.bt-selector .bt-options {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+	gap: var(--bt-gap);
+}
+
+.bt-selector .bt-option {
+	position: relative;
+	display: block;
+	cursor: pointer;
+}
+
+/* The native radio stays in the page for keyboards and screen readers. */
+.bt-selector .bt-radio {
+	position: absolute;
+	opacity: 0;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	cursor: pointer;
+}
+
+.bt-selector .bt-card {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	height: 100%;
+	padding: 12px;
+	background: var(--bt-bg);
+	border: var(--bt-border-width) solid var(--bt-border);
+	border-radius: var(--bt-radius);
+	box-sizing: border-box;
+	transition: border-color .15s, box-shadow .15s;
+}
+
+.bt-selector .bt-option.has-badge .bt-card { padding-top: 22px; }
+
+.bt-selector .bt-radio:checked + .bt-card {
+	border-color: var(--bt-accent);
+	box-shadow: 0 0 0 1px var(--bt-accent);
+}
+
+.bt-selector .bt-radio:focus-visible + .bt-card {
+	outline: 2px solid var(--bt-accent);
+	outline-offset: 2px;
+}
+
+.bt-selector .bt-option.is-disabled { cursor: not-allowed; }
+.bt-selector .bt-option.is-disabled .bt-card { opacity: .45; }
+.bt-selector .bt-option.is-disabled .bt-radio { cursor: not-allowed; }
+
+.bt-selector .bt-badge {
+	position: absolute;
+	top: 0;
+	left: 12px;
+	transform: translateY(-50%);
+	padding: 2px 8px;
+	background: var(--bt-accent);
+	color: #fff;
+	font-size: .75em;
+	line-height: 1.4;
+	border-radius: 2px;
+	white-space: nowrap;
+}
+
+.bt-selector .bt-label { font-weight: 600; }
+.bt-selector .bt-total { font-size: 1.15em; font-weight: 700; }
+.bt-selector .bt-full,
+.bt-selector .bt-unit,
+.bt-selector .bt-save { font-size: .85em; color: var(--bt-muted); }
+.bt-selector .bt-save { color: var(--bt-accent); }
+.bt-selector [hidden] { display: none !important; }
+
+/* List style: one row per tier. */
+.bt-selector.bt-style-list .bt-options { grid-template-columns: 1fr; }
+.bt-selector.bt-style-list .bt-card {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: baseline;
+	column-gap: 12px;
+}
+.bt-selector.bt-style-list .bt-total { grid-column: 2; grid-row: 1; text-align: right; }
+.bt-selector.bt-style-list .bt-full { grid-column: 2; grid-row: 2; text-align: right; }
+.bt-selector.bt-style-list .bt-unit,
+.bt-selector.bt-style-list .bt-save { grid-column: 1; }
+
+/* Quantity is chosen through the tiers, so hide the stepper (script adds .bt-active). */
+form.bt-active .quantity { display: none !important; }

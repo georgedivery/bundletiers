@@ -1,0 +1,15 @@
+.bt-editor .bt-tiers { max-width: 900px; }
+.bt-editor .bt-tiers th,
+.bt-editor .bt-tiers td { padding: 6px 8px; vertical-align: middle; }
+.bt-editor .bt-tiers input[type="text"],
+.bt-editor .bt-tiers input[type="number"],
+.bt-editor .bt-tiers select { width: 100%; max-width: none; float: none; margin: 0; }
+.bt-editor .bt-col-default,
+.bt-editor .bt-col-remove { width: 48px; text-align: center; }
+.bt-editor .bt-col-qty { width: 70px; }
+.bt-editor .bt-col-value { width: 90px; }
+.bt-editor .bt-remove { color: #b32d2e; font-size: 20px; line-height: 1; cursor: pointer; text-decoration: none; }
+.bt-editor .bt-actions { margin-top: 10px; }
+.bt-editor .bt-actions .description { margin-left: 8px; }
+.bt-product-editor { padding: 9px 12px; }
+.bt-product-editor .bt-tiers input[type="radio"] { float: none; margin: 0; }

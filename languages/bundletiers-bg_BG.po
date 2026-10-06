@@ -1,0 +1,308 @@
+# Copyright (C) 2026 Webbeb
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BundleTiers – Bundle Discounts for WooCommerce 0.1.0\n"
+"Report-Msgid-Bugs-To: https://webbeb.com\n"
+"POT-Creation-Date: 2026-10-06T17:43:40+00:00\n"
+"PO-Revision-Date: 2026-10-06 20:00+0300\n"
+"Last-Translator: Webbeb\n"
+"Language-Team: Bulgarian\n"
+"Language: bg_BG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: bundletiers\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#: bundletiers.php
+msgid "BundleTiers – Bundle Discounts for WooCommerce"
+msgstr "BundleTiers – Bundle Discounts for WooCommerce"
+
+#. Description of the plugin
+#: bundletiers.php
+msgid ""
+"Quantity-tier bundle discounts (1 / 2 / 3 pcs) for WooCommerce products, "
+"with variations counted together."
+msgstr ""
+"Отстъпки за комплекти по количество (1 / 2 / 3 броя) за продукти на "
+"WooCommerce, с обща сметка на вариациите."
+
+#. Author of the plugin
+#: bundletiers.php
+msgid "Webbeb"
+msgstr "Webbeb"
+
+#. Author URI of the plugin
+#: bundletiers.php
+msgid "https://webbeb.com"
+msgstr "https://webbeb.com"
+
+#: includes/class-plugin.php:71
+msgid "BundleTiers requires WooCommerce to be installed and active."
+msgstr "BundleTiers изисква WooCommerce да е инсталиран и активен."
+
+#: includes/class-product-tab.php:37 includes/class-settings-page.php:22
+msgid "BundleTiers"
+msgstr "BundleTiers"
+
+#: includes/class-product-tab.php:66
+msgid "Enable bundles"
+msgstr "Включи комплектите"
+
+#: includes/class-product-tab.php:67
+msgid "Offer quantity bundles with a discount for this product"
+msgstr "Предлагай комплекти по количество с отстъпка за този продукт"
+
+#: includes/class-product-tab.php:74 includes/class-settings-page.php:43
+msgid "Tiers"
+msgstr "Нива"
+
+#: includes/class-product-tab.php:77
+msgid "Global tiers (WooCommerce → Settings → BundleTiers)"
+msgstr "Общи нива (WooCommerce → Настройки → BundleTiers)"
+
+#: includes/class-product-tab.php:78
+msgid "Custom tiers for this product"
+msgstr "Собствени нива за този продукт"
+
+#: includes/class-product-tab.php:113
+msgid "BundleTiers: custom tiers were empty, so global tiers are used."
+msgstr "BundleTiers: собствените нива бяха празни, затова се използват общите."
+
+#: includes/class-settings-page.php:37
+msgid "Default tiers"
+msgstr "Общи нива"
+
+#: includes/class-settings-page.php:39
+msgid ""
+"Used by every product that has BundleTiers switched on and set to \"Global "
+"tiers\"."
+msgstr ""
+"Използват се от всеки продукт с включен BundleTiers и избрани „Общи нива“."
+
+#: includes/class-settings-page.php:48
+msgid "Count variations together"
+msgstr "Брой вариациите заедно"
+
+#: includes/class-settings-page.php:49
+msgid ""
+"Add up the quantities of all variations of a product to find the tier (1 × S "
+"+ 2 × M = pack of 3)."
+msgstr ""
+"Събира количествата на всички вариации на продукта, за да определи нивото (1 "
+"× S + 2 × M = комплект от 3)."
+
+#: includes/class-settings-page.php:55
+msgid "Coupons"
+msgstr "Купони"
+
+#: includes/class-settings-page.php:56
+msgid "Do not allow coupons on products that get a bundle discount"
+msgstr "Не позволявай купони за продукти с отстъпка за комплект"
+
+#: includes/class-settings-page.php:67
+msgid "Appearance"
+msgstr "Външен вид"
+
+#: includes/class-settings-page.php:69
+msgid ""
+"The cards use the font of your theme. Colours and shape can be set here."
+msgstr "Картите ползват шрифта на темата. Цветовете и формата се задават тук."
+
+#: includes/class-settings-page.php:73
+msgid "Position"
+msgstr "Позиция"
+
+#: includes/class-settings-page.php:77
+msgid "Before the add to cart button"
+msgstr "Преди бутона за добавяне в количката"
+
+#: includes/class-settings-page.php:78
+msgid "After the add to cart button"
+msgstr "След бутона за добавяне в количката"
+
+#: includes/class-settings-page.php:83
+msgid "Style"
+msgstr "Стил"
+
+#: includes/class-settings-page.php:87
+msgid "Cards"
+msgstr "Карти"
+
+#: includes/class-settings-page.php:88
+msgid "List"
+msgstr "Списък"
+
+#: includes/class-settings-page.php:93
+msgid "Card background"
+msgstr "Фон на кутийката"
+
+#: includes/class-settings-page.php:100
+msgid "Border colour"
+msgstr "Цвят на рамката"
+
+#: includes/class-settings-page.php:107
+msgid "Accent colour"
+msgstr "Цвят на акцента"
+
+#: includes/class-settings-page.php:111
+msgid "Border of the selected card and the badge."
+msgstr "Рамка на избраната кутийка и значка."
+
+#: includes/class-settings-page.php:115
+msgid "Border width (px)"
+msgstr "Дебелина на рамката (px)"
+
+#: includes/class-settings-page.php:127
+msgid "Corner radius (px)"
+msgstr "Радиус на ъглите (px)"
+
+#: includes/class-settings-page.php:139
+msgid "Text: savings"
+msgstr "Текст: спестявания"
+
+#: includes/class-settings-page.php:141 includes/class-settings.php:47
+msgid "You save"
+msgstr "Спестявате"
+
+#: includes/class-settings-page.php:142
+msgid "Shown before the saved amount."
+msgstr "Показва се пред спестената сума."
+
+#: includes/class-settings-page.php:146
+msgid "Text: per item"
+msgstr "Текст: за брой"
+
+#: includes/class-settings-page.php:148 includes/class-settings.php:48
+msgid "per item"
+msgstr "за брой"
+
+#: includes/class-settings-page.php:149
+msgid "Shown after the price per item."
+msgstr "Показва се след цената за брой."
+
+#: includes/class-settings-page.php:153
+msgid "Text: cart label"
+msgstr "Текст: етикет в количката"
+
+#: includes/class-settings-page.php:155 includes/class-settings.php:49
+msgid "Bundle"
+msgstr "Комплект"
+
+#: includes/class-settings-page.php:156
+msgid "Label of the bundle in the cart and in orders."
+msgstr "Етикет на комплекта в количката и в поръчките."
+
+#: includes/class-settings-page.php:165
+msgid "Data"
+msgstr "Данни"
+
+#: includes/class-settings-page.php:170
+msgid "Delete data on uninstall"
+msgstr "Изтриване на данните при деинсталиране"
+
+#: includes/class-settings-page.php:171
+msgid ""
+"Remove all BundleTiers settings and product data when the plugin is deleted"
+msgstr ""
+"Премахни всички настройки и данни по продукти на BundleTiers, когато "
+"плъгинът се изтрие"
+
+#: includes/class-settings.php:157
+msgid "BundleTiers: at least one tier is required. Previous tiers were kept."
+msgstr "BundleTiers: нужно е поне едно ниво. Предишните нива са запазени."
+
+#: includes/class-tiers-editor.php:30
+msgid "Default"
+msgstr "По подразбиране"
+
+#: includes/class-tiers-editor.php:31
+msgid "Qty"
+msgstr "Бр."
+
+#: includes/class-tiers-editor.php:32
+msgid "Discount"
+msgstr "Отстъпка"
+
+#: includes/class-tiers-editor.php:33
+msgid "Value"
+msgstr "Стойност"
+
+#: includes/class-tiers-editor.php:34
+msgid "Label"
+msgstr "Етикет"
+
+#: includes/class-tiers-editor.php:35
+msgid "Badge"
+msgstr "Значка"
+
+#: includes/class-tiers-editor.php:44
+msgid "Add tier"
+msgstr "Добави ниво"
+
+#. translators: %s: currency symbol
+#: includes/class-tiers-editor.php:48
+#, php-format
+msgid ""
+"Percent: 0–100. Amounts are in %s. The default tier is preselected on the "
+"product page."
+msgstr ""
+"Процент: 0–100. Сумите са в %s. Нивото по подразбиране е предварително "
+"избрано на страницата на продукта."
+
+#: includes/class-tiers-editor.php:89
+msgid "e.g. 2 pcs"
+msgstr "напр. 2 броя"
+
+#: includes/class-tiers-editor.php:90
+msgid "e.g. Best value"
+msgstr "напр. Най-изгодно"
+
+#: includes/class-tiers-editor.php:91
+msgid "Remove tier"
+msgstr "Премахни нивото"
+
+#: includes/class-tiers.php:40
+msgid "Percent off"
+msgstr "Процент отстъпка"
+
+#: includes/class-tiers.php:41
+msgid "Amount off each item"
+msgstr "Сума отстъпка за всеки брой"
+
+#: includes/class-tiers.php:42
+msgid "Fixed pack price"
+msgstr "Фиксирана цена на комплекта"
+
+#: includes/class-tiers.php:66
+msgid "Most popular"
+msgstr "Най-избиран"
+
+#: includes/class-tiers.php:112
+msgid "A tier with a quantity below 1 was removed."
+msgstr "Ниво с количество под 1 беше премахнато."
+
+#. translators: %d: quantity
+#: includes/class-tiers.php:117
+#, php-format
+msgid "Duplicate tier for quantity %d was removed."
+msgstr "Повтарящо се ниво за количество %d беше премахнато."
+
+#: includes/class-tiers.php:155
+msgid "A tier for quantity 1 (no discount) was added; it is required."
+msgstr "Добавено е ниво за количество 1 (без отстъпка); то е задължително."
+
+#. translators: %d: number of items in the pack
+#: includes/class-tiers.php:193
+#, php-format
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d брой"
+msgstr[1] "%d броя"
+
+#: templates/bundletiers/selector.php:22
+msgid "Choose quantity"
+msgstr "Изберете количество"
