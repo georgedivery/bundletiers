@@ -147,7 +147,7 @@ class Frontend {
 		$variable  = $product->is_type( 'variable' );
 		$price     = $variable ? $product->get_variation_price( 'min', true ) : wc_get_price_to_display( $product );
 		$base      = Pricing::to_minor( $price, $decimals );
-		$max       = $variable ? -1 : (int) $product->get_max_purchases_quantity();
+		$max       = $variable ? -1 : (int) $product->get_max_purchase_quantity();
 		$min       = max( 1, (int) $product->get_min_purchase_quantity() );
 		$settings  = Settings::get();
 		$tiers_raw = Tiers::for_product( $product );
