@@ -30,6 +30,28 @@ The tier follows the **total quantity in the cart**, not a stored choice. Changi
 3. Go to **WooCommerce → Settings → BundleTiers** and set the default tiers.
 4. Edit a product, open the **BundleTiers** tab under *Product data* and tick *Enable bundles*.
 
+## Switching bundles on for a product
+
+Bundles are **off by default and set per product**. A product only gets the selector, the cart pricing and the order record after you:
+
+1. open the product and go to **Product data → BundleTiers**,
+2. tick **Enable bundles**,
+3. choose **Global tiers** (from WooCommerce → Settings → BundleTiers) or **Custom tiers for this product**,
+4. click **Update**.
+
+## Supported products
+
+| Product type | BundleTiers tab |
+|---|---|
+| Simple | yes |
+| Variable | yes (all variations of the product count towards the same pack) |
+| Grouped | no |
+| External / affiliate | no |
+
+The product type is the dropdown next to **Product data** on the product edit screen.
+
+A grouped product is only a page that lists other products, each with its own quantity, so enable bundles on those products themselves. An external product sends the customer to another site and has no cart, so there is nothing to discount.
+
 ## Requirements
 
 - WordPress 6.4+

@@ -29,6 +29,10 @@ BundleTiers adds a simple bundle selector to your product page: 1 pc, 2 pcs, 3 p
 * Works with HPOS and the Cart and Checkout blocks.
 * Override the selector markup in your theme: `yourtheme/bundletiers/selector.php`.
 
+**Which products get bundles**
+
+Bundles are off by default and are switched on per product (Product data → BundleTiers → Enable bundles). Simple and variable products are supported. Grouped products (a page that lists other products) and external/affiliate products have no BundleTiers tab: enable bundles on the individual products instead.
+
 **How the tier is chosen**
 
 The tier follows the total quantity in the cart, not a saved choice. Changing the quantity on the cart page updates the discount straight away.
@@ -41,6 +45,14 @@ The tier follows the total quantity in the cart, not a saved choice. Changing th
 4. Edit a product, open the BundleTiers tab under Product data and tick "Enable bundles".
 
 == Frequently Asked Questions ==
+
+= How do I switch bundles on for a product? =
+
+Edit the product, open the BundleTiers tab under Product data, tick "Enable bundles" and click Update. Bundles are off by default, so no product changes until you do this.
+
+= Which product types are supported? =
+
+Simple and variable products (the product type is the dropdown next to Product data on the product edit screen). Grouped and external products have no BundleTiers tab: a grouped product only lists other products (enable bundles on those), and an external product sends the customer to another site and has no cart.
 
 = Does it work with variable products? =
 
