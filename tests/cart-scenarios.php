@@ -5,19 +5,24 @@
  * Run from the WordPress root:
  *   wp eval-file wp-content/plugins/bundletiers/tests/cart-scenarios.php
  *
- * Needs a variable product with at least two variations (default: id 26).
  * Temporarily changes the BundleTiers settings and creates/deletes a test
- * product, coupon and order; everything is restored at the end.
+ * variable product, coupon and order; everything is restored at the end.
  */
 
 use BundleTiers\Settings;
 use BundleTiers\Pricing;
 
-if ( 'local.brivanto.com' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+if ( ! in_array( wp_parse_url( home_url(), PHP_URL_HOST ), array( 'local.brivanto.com', 'bundletiers.local' ), true ) ) {
 	WP_CLI::error( 'Refusing to run: this is not the local site.' );
 }
 
-const BT_TEST_PRODUCT = 26;
+require_once __DIR__ . '/helpers.php';
+
+// A site may switch coupons off; the coupon checks below need them on (this process only).
+remove_all_filters( 'pre_option_woocommerce_enable_coupons' );
+add_filter( 'pre_option_woocommerce_enable_coupons', static function () {
+	return 'yes';
+} );
 
 $GLOBALS['bt_fail'] = 0;
 $GLOBALS['bt_n']    = 0;
@@ -32,14 +37,12 @@ function bt_check( $label, $actual, $expected ) {
 wc_load_cart();
 $cart     = WC()->cart;
 $original = get_option( Settings::OPTION, null );
-$parent   = wc_get_product( BT_TEST_PRODUCT );
+$parent   = bt_create_variable_product( '25.51' );
 $vids     = $parent->get_children();
 if ( count( $vids ) < 2 ) {
 	WP_CLI::error( 'Test product needs two variations.' );
 }
 list( $xl, $xxl ) = $vids;
-$orig_enabled     = $parent->get_meta( '_bundletiers_enabled' );
-$orig_mode        = $parent->get_meta( '_bundletiers_mode' );
 
 function bt_settings( array $override = array() ) {
 	$tier = function ( $q, $type, $v, $d = false ) {
@@ -78,7 +81,7 @@ $parent->update_meta_data( '_bundletiers_mode', 'global' );
 $parent->save();
 
 $was  = array();
-$base = Pricing::to_minor( wc_get_product( $xl )->get_price() ); // 2551 for Brivanto.
+$base = Pricing::to_minor( wc_get_product( $xl )->get_price() ); // 2551.
 
 try {
 	// 1. Single item: no discount.
@@ -229,6 +232,15 @@ try {
 		bt_check( 'order meta saved', $meta['saved'] ?? null, 3 * $base - 3 * Pricing::apply( $base, 1, 'percent', 15 )['total'] );
 		$visible = wc_display_item_meta( $line, array( 'echo' => false ) );
 		bt_check( 'visible line shows the pack', false !== strpos( wp_strip_all_tags( $visible ), '−15%' ), true );
+		// The stored key is a constant; the cart label setting only changes what is shown.
+		bt_check( 'visible line is stored under a fixed key', '' !== (string) $line->get_meta( BundleTiers\Order::PACK_KEY ), true );
+		bt_check( 'default label is shown', false !== strpos( wp_strip_all_tags( $visible ), 'Bundle' ), true );
+		bt_settings( array( 'text_cart_label' => 'Pack deal' ) );
+		$same_line = array_values( wc_get_order( $order_id )->get_items() )[0];
+		bt_check( 'changed label is shown on the same order', false !== strpos( wp_strip_all_tags( wc_display_item_meta( $same_line, array( 'echo' => false ) ) ), 'Pack deal' ), true );
+		bt_settings( array( 'text_cart_label' => '' ) );
+		$same_line = array_values( wc_get_order( $order_id )->get_items() )[0];
+		bt_check( 'empty label falls back to Bundle', false !== strpos( wp_strip_all_tags( wc_display_item_meta( $same_line, array( 'echo' => false ) ) ), 'Bundle' ), true );
 		$order->delete( true );
 	}
 } finally {
@@ -249,9 +261,7 @@ try {
 	} else {
 		update_option( Settings::OPTION, $original );
 	}
-	$parent->update_meta_data( '_bundletiers_enabled', $orig_enabled );
-	$parent->update_meta_data( '_bundletiers_mode', $orig_mode );
-	$parent->save();
+	bt_delete_product( $parent );
 }
 
 echo $GLOBALS['bt_fail'] ? "\n{$GLOBALS['bt_fail']} of {$GLOBALS['bt_n']} checks FAILED\n" : "All {$GLOBALS['bt_n']} checks passed\n";

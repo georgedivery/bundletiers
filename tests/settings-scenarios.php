@@ -7,7 +7,7 @@
 
 use BundleTiers\Settings;
 
-if ( 'local.brivanto.com' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+if ( ! in_array( wp_parse_url( home_url(), PHP_URL_HOST ), array( 'local.brivanto.com', 'bundletiers.local' ), true ) ) {
 	WP_CLI::error( 'Refusing to run: this is not the local site.' );
 }
 
@@ -73,6 +73,16 @@ try {
 	bt_check( 'saved: bad colour falls back', $saved['style_border_color'] ?? null, '#d5d7dd' );
 	bt_check( 'saved: width', $saved['style_border_width'] ?? null, 4 );
 	bt_check( 'saved: radius clamped', $saved['style_radius'] ?? null, 40 );
+
+	// Select fields only keep a choice the field offers.
+	foreach ( array( 'position' => array( 'after', 'before' ), 'style' => array( 'list', 'cards' ) ) as $key => $choices ) {
+		$_POST[ Settings::OPTION ] = array( $key => $choices[0] );
+		WC_Admin_Settings::save_fields( $fields );
+		bt_check( "saved: valid $key kept", get_option( Settings::OPTION )[ $key ] ?? null, $choices[0] );
+		$_POST[ Settings::OPTION ] = array( $key => '"><script>alert(1)</script>' );
+		WC_Admin_Settings::save_fields( $fields );
+		bt_check( "saved: bad $key falls back to default", get_option( Settings::OPTION )[ $key ] ?? null, $choices[1] );
+	}
 } finally {
 	unset( $_POST[ Settings::OPTION ] );
 	if ( null === $original ) {

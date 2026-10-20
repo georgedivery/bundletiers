@@ -6,7 +6,9 @@
 
 use BundleTiers\Settings;
 
-if ( 'local.brivanto.com' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+require_once __DIR__ . '/helpers.php';
+
+if ( ! in_array( wp_parse_url( home_url(), PHP_URL_HOST ), array( 'local.brivanto.com', 'bundletiers.local' ), true ) ) {
 	WP_CLI::error( 'Refusing to run: this is not the local site.' );
 }
 
@@ -22,9 +24,7 @@ function bt_check( $label, $actual, $expected ) {
 
 new BundleTiers\Frontend(); // Registers the filter (normally done by the plugin on load).
 
-$product = wc_get_product( 26 );
-$meta    = $product->get_meta( '_bundletiers_enabled' );
-$mode    = $product->get_meta( '_bundletiers_mode' );
+$product = bt_create_variable_product();
 $orig    = get_option( Settings::OPTION, null );
 $other   = null;
 
@@ -70,16 +70,13 @@ try {
 	$GLOBALS['product'] = $product;
 	$product->update_meta_data( '_bundletiers_enabled', 'no' );
 	$product->save();
-	$html = woocommerce_quantity_input( array( 'input_name' => 'quantity' ), wc_get_product( 26 ), false );
+	$html = woocommerce_quantity_input( array( 'input_name' => 'quantity' ), wc_get_product( $product->get_id() ), false );
 	bt_check( 'switched off: normal field', false !== strpos( $html, 'class="quantity"' ), true );
 } finally {
 	if ( $other && $other->get_id() ) {
 		$other->delete( true );
 	}
-	$product = wc_get_product( 26 );
-	$product->update_meta_data( '_bundletiers_enabled', $meta );
-	$product->update_meta_data( '_bundletiers_mode', $mode );
-	$product->save();
+	bt_delete_product( $product );
 	if ( null === $orig ) {
 		delete_option( Settings::OPTION );
 	} else {

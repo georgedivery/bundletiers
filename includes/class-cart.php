@@ -18,12 +18,27 @@ defined( 'ABSPATH' ) || exit;
 class Cart {
 
 	/**
-	 * Current price (minor units) of each cart line before our discount, by cart
-	 * item key. Kept for the request so repeated calculations never compound.
+	 * Current price (minor units, as shown in the shop, with or without tax) of each
+	 * cart line before our discount, by cart item key. Kept for the request so
+	 * repeated calculations never compound.
 	 *
 	 * @var int[]
 	 */
 	private $base = array();
+
+	/**
+	 * Stored price of each cart line before our discount, by cart item key.
+	 *
+	 * @var array
+	 */
+	private $stored = array();
+
+	/**
+	 * Displayed-to-stored price factor of each cart line, by cart item key.
+	 *
+	 * @var float[]
+	 */
+	private $factor = array();
 
 	/**
 	 * Registers the cart hooks.
@@ -42,7 +57,9 @@ class Cart {
 	 * Forgets the remembered prices (the cart was emptied).
 	 */
 	public function reset_base() {
-		$this->base = array();
+		$this->base   = array();
+		$this->stored = array();
+		$this->factor = array();
 	}
 
 	/**
@@ -75,7 +92,10 @@ class Cart {
 				if ( '' === $price || null === $price ) {
 					continue;
 				}
-				$this->base[ $key ] = Pricing::to_minor( $price, $decimals );
+				// Same price the product page shows, so a fixed amount means the same in both places.
+				$this->stored[ $key ] = $price;
+				$this->factor[ $key ] = Tax_Basis::factor( $product );
+				$this->base[ $key ]   = Tax_Basis::to_display_minor( $product, $price, $this->factor[ $key ], $decimals );
 			}
 
 			$parent = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
@@ -129,7 +149,14 @@ class Cart {
 
 			// A single price per unit: the exact line total divided by the quantity,
 			// so WooCommerce's own multiplication gives back the exact line total.
-			$cart->cart_contents[ $key ]['data']->set_price( $line_total / $qty / pow( 10, $decimals ) );
+			// The line total is in the shop display price, WooCommerce wants the stored basis.
+			// Lines without a discount keep their stored price untouched.
+			if ( $line_total >= $line_full ) {
+				$unit_price = $this->stored[ $key ];
+			} else {
+				$unit_price = Tax_Basis::to_stored( $line_total / $qty, $this->factor[ $key ], $decimals );
+			}
+			$cart->cart_contents[ $key ]['data']->set_price( $unit_price );
 
 			$cart->cart_contents[ $key ]['bundletiers'] = array(
 				'tier'     => $tier,

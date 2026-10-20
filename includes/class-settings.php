@@ -148,6 +148,10 @@ class Settings {
 				return self::clean_style( $style_key, $raw_value );
 			}
 		}
+		// Select fields only accept the choices the field itself offers.
+		if ( 'select' === ( $option['type'] ?? '' ) && ! empty( $option['options'] ) && 0 === strpos( $option['id'], self::OPTION . '[' ) ) {
+			return is_scalar( $value ) && array_key_exists( (string) $value, $option['options'] ) ? $value : ( $option['default'] ?? '' );
+		}
 		if ( self::OPTION . '[tiers]' !== $option['id'] ) {
 			return $value;
 		}

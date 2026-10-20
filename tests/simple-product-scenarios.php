@@ -7,7 +7,7 @@
 
 use BundleTiers\Settings;
 
-if ( 'local.brivanto.com' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+if ( ! in_array( wp_parse_url( home_url(), PHP_URL_HOST ), array( 'local.brivanto.com', 'bundletiers.local' ), true ) ) {
 	WP_CLI::error( 'Refusing to run: this is not the local site.' );
 }
 
@@ -55,7 +55,7 @@ try {
 	bt_check( 'three cards', substr_count( $html, 'class="bt-radio"' ), 3 );
 	bt_check( 'no card disabled', false === strpos( $html, 'disabled' ), true );
 	bt_check( 'default tier is checked', 1 === preg_match( '/value="2"\s+checked/', $html ), true );
-	bt_check( 'price of 2 with 10%', false !== strpos( $html, '9.00' ), true );
+	bt_check( 'price of 2 with 10%', false !== strpos( html_entity_decode( $html ), html_entity_decode( wp_strip_all_tags( wc_price( 9 ) ) ) ), true );
 	bt_check( 'data attribute says not variable', false !== strpos( $html, '&quot;variable&quot;:false' ), true );
 
 	// Limited stock (2 in stock): the 3 card is disabled.
