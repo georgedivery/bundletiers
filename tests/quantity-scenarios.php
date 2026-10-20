@@ -7,10 +7,7 @@
 use BundleTiers\Settings;
 
 require_once __DIR__ . '/helpers.php';
-
-if ( ! in_array( wp_parse_url( home_url(), PHP_URL_HOST ), array( 'local.brivanto.com', 'bundletiers.local' ), true ) ) {
-	WP_CLI::error( 'Refusing to run: this is not the local site.' );
-}
+bt_require_local_site();
 
 $GLOBALS['bt_fail'] = 0;
 $GLOBALS['bt_n']    = 0;

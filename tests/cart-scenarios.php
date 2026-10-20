@@ -12,11 +12,8 @@
 use BundleTiers\Settings;
 use BundleTiers\Pricing;
 
-if ( ! in_array( wp_parse_url( home_url(), PHP_URL_HOST ), array( 'local.brivanto.com', 'bundletiers.local' ), true ) ) {
-	WP_CLI::error( 'Refusing to run: this is not the local site.' );
-}
-
 require_once __DIR__ . '/helpers.php';
+bt_require_local_site();
 
 // A site may switch coupons off; the coupon checks below need them on (this process only).
 remove_all_filters( 'pre_option_woocommerce_enable_coupons' );
@@ -234,13 +231,13 @@ try {
 		bt_check( 'visible line shows the pack', false !== strpos( wp_strip_all_tags( $visible ), '−15%' ), true );
 		// The stored key is a constant; the cart label setting only changes what is shown.
 		bt_check( 'visible line is stored under a fixed key', '' !== (string) $line->get_meta( BundleTiers\Order::PACK_KEY ), true );
-		bt_check( 'default label is shown', false !== strpos( wp_strip_all_tags( $visible ), 'Bundle' ), true );
+		bt_check( 'default label is shown', false !== strpos( wp_strip_all_tags( $visible ), __( 'Bundle', 'bundletiers' ) ), true );
 		bt_settings( array( 'text_cart_label' => 'Pack deal' ) );
 		$same_line = array_values( wc_get_order( $order_id )->get_items() )[0];
 		bt_check( 'changed label is shown on the same order', false !== strpos( wp_strip_all_tags( wc_display_item_meta( $same_line, array( 'echo' => false ) ) ), 'Pack deal' ), true );
 		bt_settings( array( 'text_cart_label' => '' ) );
 		$same_line = array_values( wc_get_order( $order_id )->get_items() )[0];
-		bt_check( 'empty label falls back to Bundle', false !== strpos( wp_strip_all_tags( wc_display_item_meta( $same_line, array( 'echo' => false ) ) ), 'Bundle' ), true );
+		bt_check( 'empty label falls back to the default', false !== strpos( wp_strip_all_tags( wc_display_item_meta( $same_line, array( 'echo' => false ) ) ), __( 'Bundle', 'bundletiers' ) ), true );
 		$order->delete( true );
 	}
 } finally {
