@@ -142,6 +142,28 @@ try {
 	bt_add( $xxl, 98 );
 	bt_check( 'fixed pack 100 items = 100 x pack/3', array_sum( bt_lines() ), 216833 );
 
+	// 7b. A huge quantity is priced instantly and exactly (no entry per item).
+	bt_settings();
+	bt_fresh();
+	$huge_qty = 50000000;
+	bt_add( $xl, $huge_qty );
+	$memory_before = memory_get_usage();
+	bt_check( 'huge quantity: 15% off every item', array_sum( bt_lines() ), $huge_qty * Pricing::apply( $base, 1, 'percent', 15 )['total'] );
+	bt_check( 'huge quantity: memory stays small', ( memory_get_usage() - $memory_before ) < 20 * 1048576, true );
+
+	// 7c. Tiers above the allowed quantity are dropped when saved.
+	$messages = array();
+	$clean    = BundleTiers\Tiers::sanitize(
+		array(
+			'a' => array( 'qty' => 1, 'type' => 'percent', 'value' => 0 ),
+			'b' => array( 'qty' => 50000000, 'type' => 'percent', 'value' => 10 ),
+			'default' => 'a',
+		),
+		$messages
+	);
+	bt_check( 'tier above the limit is removed', wp_list_pluck( $clean, 'qty' ), array( 1 ) );
+	bt_check( 'the removal is explained', count( $messages ), 1 );
+
 	// 8. A real sale price: the discount is taken from the current (sale) price.
 	$sale = array( $xl => '20.00', $xxl => '22.00' );
 	foreach ( $sale as $id => $price ) {

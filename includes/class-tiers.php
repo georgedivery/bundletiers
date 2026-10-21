@@ -22,6 +22,12 @@ class Tiers {
 	const META_TIERS   = '_bundletiers_tiers';
 
 	/**
+	 * Largest quantity a tier can be for. Keeps a typo or a tampered value from
+	 * making the product page build millions of items.
+	 */
+	const MAX_QTY = 1000;
+
+	/**
 	 * Allowed discount types.
 	 *
 	 * @return string[]
@@ -110,6 +116,11 @@ class Tiers {
 			$qty = isset( $row['qty'] ) ? (int) $row['qty'] : 0;
 			if ( $qty < 1 ) {
 				$messages[] = __( 'A tier with a quantity below 1 was removed.', 'bundletiers' );
+				continue;
+			}
+			if ( $qty > self::MAX_QTY ) {
+				/* translators: %d: largest allowed quantity */
+				$messages[] = sprintf( __( 'A tier with a quantity above %d was removed.', 'bundletiers' ), self::MAX_QTY );
 				continue;
 			}
 			if ( isset( $seen[ $qty ] ) ) {
@@ -233,9 +244,26 @@ class Tiers {
 		if ( 'custom' === $product->get_meta( self::META_MODE ) ) {
 			$custom = $product->get_meta( self::META_TIERS );
 			if ( is_array( $custom ) && $custom ) {
-				return $custom;
+				return self::within_limits( $custom );
 			}
 		}
-		return Settings::get( 'tiers' );
+		return self::within_limits( Settings::get( 'tiers' ) );
+	}
+
+	/**
+	 * Drops tiers with a quantity above the limit (stored data is not always sanitised).
+	 *
+	 * @param array $tiers Tiers.
+	 * @return array
+	 */
+	private static function within_limits( array $tiers ) {
+		return array_values(
+			array_filter(
+				$tiers,
+				static function ( $tier ) {
+					return isset( $tier['qty'] ) && (int) $tier['qty'] <= self::MAX_QTY;
+				}
+			)
+		);
 	}
 }

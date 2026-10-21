@@ -77,6 +77,52 @@ foreach ( array( 'percent' => 13.3, 'fixed_item' => 0.7, 'fixed_pack' => 33.33 )
 	}
 }
 
+// apply_lines() (work per line) must give the same line totals as apply_mixed() on the items spread out.
+mt_srand( 20261021 );
+$mismatch = 0;
+$runs     = 0;
+foreach ( array( 'percent' => array( 0, 10, 13.3, 100 ), 'fixed_item' => array( 0.7, 2, 50 ), 'fixed_pack' => array( 33.33, 65.05, 500 ) ) as $t => $values ) {
+	foreach ( $values as $v ) {
+		for ( $round = 0; $round < 60; $round++ ) {
+			$lines = array();
+			$flat  = array();
+			for ( $l = 0, $line_count = mt_rand( 1, 4 ); $l < $line_count; $l++ ) {
+				$line    = array( 'base' => mt_rand( 0, 6000 ), 'qty' => mt_rand( 1, 9 ) );
+				$lines[] = $line;
+				$flat    = array_merge( $flat, array_fill( 0, $line['qty'], $line['base'] ) );
+			}
+			$tier_qty = mt_rand( 0, 5 );
+			$old      = Pricing::apply_mixed( $flat, $t, $v, 2, $tier_qty );
+			$new      = Pricing::apply_lines( $lines, $t, $v, 2, $tier_qty );
+			$offset   = 0;
+			$expected = array();
+			foreach ( $lines as $line ) {
+				$expected[] = array_sum( array_slice( $old['units'], $offset, $line['qty'] ) );
+				$offset    += $line['qty'];
+			}
+			++$runs;
+			if ( $new['lines'] !== $expected || $new['total'] !== $old['total'] || $new['full'] !== $old['full'] || $new['saved'] !== $old['saved'] ) {
+				++$mismatch;
+			}
+		}
+	}
+}
+check( "apply_lines matches apply_mixed on $runs random carts", $mismatch, 0 );
+check( 'apply_lines line totals add up', array_sum( Pricing::apply_lines( array( array( 'base' => 2551, 'qty' => 1 ), array( 'base' => 2551, 'qty' => 2 ) ), 'fixed_pack', 65.05, 2, 3 )['lines'] ), 6505 );
+check( 'apply_lines split like the item by item sharing', Pricing::apply_lines( array( array( 'base' => 2551, 'qty' => 1 ), array( 'base' => 2551, 'qty' => 2 ) ), 'fixed_pack', 65.05, 2, 3 )['lines'], array( 2169, 4336 ) );
+
+// A huge quantity is cheap: no entry per item.
+$mem_before = memory_get_usage();
+$big        = Pricing::apply_lines( array( array( 'base' => 2551, 'qty' => 50000000 ) ), 'fixed_pack', 65.05, 2, 3 );
+check( 'fixed_pack x50 million total', $big['total'], 108416666667 );
+check( 'percent x50 million total', Pricing::apply_lines( array( array( 'base' => 2551, 'qty' => 50000000 ) ), 'percent', 15, 2 )['total'], 50000000 * 2168 );
+check( 'fixed_item x50 million total', Pricing::apply_lines( array( array( 'base' => 2551, 'qty' => 50000000 ) ), 'fixed_item', 5, 2 )['total'], 50000000 * 2051 );
+check( 'a huge quantity uses almost no memory', ( memory_get_usage() - $mem_before ) < 1048576, true );
+// Numbers too big for whole-number maths still add up and never crash.
+$huge = Pricing::apply_lines( array( array( 'base' => 1000000000, 'qty' => 1000000000 ), array( 'base' => 1500000000, 'qty' => 3 ) ), 'fixed_pack', 90000000, 2, 3 );
+check( 'overflow guard: parts add up to the total', array_sum( $huge['lines'] ), $huge['total'] );
+check( 'zero items', Pricing::apply_lines( array( array( 'base' => 100, 'qty' => 0 ) ), 'fixed_pack', 10, 2, 3 )['total'], 0 );
+
 // Unknown type, bad input.
 check( 'unknown type = full price', Pricing::apply( 1000, 2, 'bogus', 10 )['total'], 2000 );
 check( 'qty < 1 becomes 1', Pricing::apply( 1000, 0, 'percent', 10 )['total'], 900 );

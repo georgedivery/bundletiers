@@ -132,19 +132,22 @@ class Cart {
 			return;
 		}
 
-		// One entry per physical item, so lines with different prices share the discount fairly.
-		$bases = array();
+		// Work per line, never per item, so a huge quantity costs nothing extra.
+		$lines = array();
 		foreach ( $keys as $key ) {
-			$bases = array_merge( $bases, array_fill( 0, (int) $cart->cart_contents[ $key ]['quantity'], $this->base[ $key ] ) );
+			$lines[] = array(
+				'base' => $this->base[ $key ],
+				'qty'  => (int) $cart->cart_contents[ $key ]['quantity'],
+			);
 		}
-		$result = Pricing::apply_mixed( $bases, $tier['type'], $tier['value'], $decimals, (int) $tier['qty'] );
+		$result = Pricing::apply_lines( $lines, $tier['type'], $tier['value'], $decimals, (int) $tier['qty'] );
 
-		$offset = 0;
-		foreach ( $keys as $key ) {
-			$qty        = (int) $cart->cart_contents[ $key ]['quantity'];
-			$line_units = array_slice( $result['units'], $offset, $qty );
-			$offset    += $qty;
-			$line_total = array_sum( $line_units );
+		foreach ( $keys as $i => $key ) {
+			$qty = (int) $cart->cart_contents[ $key ]['quantity'];
+			if ( $qty < 1 ) {
+				continue;
+			}
+			$line_total = $result['lines'][ $i ];
 			$line_full  = $this->base[ $key ] * $qty;
 
 			// A single price per unit: the exact line total divided by the quantity,
