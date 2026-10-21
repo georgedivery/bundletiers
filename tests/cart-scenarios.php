@@ -164,6 +164,31 @@ try {
 	bt_check( 'tier above the limit is removed', wp_list_pluck( $clean, 'qty' ), array( 1 ) );
 	bt_check( 'the removal is explained', count( $messages ), 1 );
 
+	// 7d. Another plugin that changes the price (dynamic pricing, add-ons) is respected, even after we priced the line.
+	bt_settings();
+	bt_fresh();
+	bt_add( $xl, 2 );
+	bt_check( 'before the other plugin: discount on the shop price', array_sum( bt_lines() ), 2 * Pricing::apply( $base, 1, 'percent', 10 )['total'] );
+	$other_plugin = static function ( $cart ) {
+		foreach ( $cart->get_cart() as $item ) {
+			$item['data']->set_price( 30 );
+		}
+	};
+	add_action( 'woocommerce_before_calculate_totals', $other_plugin, 10 );
+	bt_check( 'another plugin sets 30.00: discount on that price', array_sum( bt_lines() ), 2 * Pricing::apply( 3000, 1, 'percent', 10 )['total'] );
+	bt_check( 'and it stays stable when calculated again', array_sum( bt_lines() ), 2 * Pricing::apply( 3000, 1, 'percent', 10 )['total'] );
+	remove_action( 'woocommerce_before_calculate_totals', $other_plugin, 10 );
+
+	// 7e. The starting price can be changed by a filter.
+	bt_fresh();
+	$base_filter = static function () {
+		return '40.00';
+	};
+	add_filter( 'bundletiers_base_price', $base_filter );
+	bt_add( $xl, 2 );
+	bt_check( 'bundletiers_base_price filter sets the starting price', array_sum( bt_lines() ), 2 * Pricing::apply( 4000, 1, 'percent', 10 )['total'] );
+	remove_filter( 'bundletiers_base_price', $base_filter );
+
 	// 8. A real sale price: the discount is taken from the current (sale) price.
 	$sale = array( $xl => '20.00', $xxl => '22.00' );
 	foreach ( $sale as $id => $price ) {

@@ -41,6 +41,14 @@ class Cart {
 	private $factor = array();
 
 	/**
+	 * Unit price we last set on each cart line, by cart item key. When the price on the
+	 * line is no longer this one, another plugin has changed it and we start from its price.
+	 *
+	 * @var array
+	 */
+	private $applied = array();
+
+	/**
 	 * Registers the cart hooks.
 	 */
 	public function __construct() {
@@ -82,9 +90,10 @@ class Cart {
 	 * Forgets the remembered prices (the cart was emptied).
 	 */
 	public function reset_base() {
-		$this->base   = array();
-		$this->stored = array();
-		$this->factor = array();
+		$this->base    = array();
+		$this->stored  = array();
+		$this->factor  = array();
+		$this->applied = array();
 	}
 
 	/**
@@ -112,15 +121,27 @@ class Cart {
 			if ( ! $tiers ) {
 				continue;
 			}
-			if ( ! isset( $this->base[ $key ] ) ) {
-				$price = $product->get_price();
-				if ( '' === $price || null === $price ) {
-					continue;
-				}
+			$price = $product->get_price();
+			if ( '' === $price || null === $price ) {
+				continue;
+			}
+			// The price on the line is ours while it is the one we set; anything else was set by another plugin.
+			$changed = isset( $this->applied[ $key ] ) && abs( (float) $price - (float) $this->applied[ $key ] ) > 0.0000001;
+			if ( ! isset( $this->base[ $key ] ) || $changed ) {
+				/**
+				 * Filters the price a bundle discount starts from for a cart line.
+				 *
+				 * @param float|string $price   Price on the line before our discount.
+				 * @param \WC_Product  $product Product.
+				 * @param array        $item    Cart item.
+				 */
+				$price = apply_filters( 'bundletiers_base_price', $price, $product, $item );
+
 				// Same price the product page shows, so a fixed amount means the same in both places.
 				$this->stored[ $key ] = $price;
 				$this->factor[ $key ] = Tax_Basis::factor( $product );
 				$this->base[ $key ]   = Tax_Basis::to_display_minor( $product, $price, $this->factor[ $key ], $decimals );
+				unset( $this->applied[ $key ] );
 			}
 
 			$parent = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
@@ -185,6 +206,7 @@ class Cart {
 				$unit_price = Tax_Basis::to_stored( $line_total / $qty, $this->factor[ $key ], $decimals );
 			}
 			$cart->cart_contents[ $key ]['data']->set_price( $unit_price );
+			$this->applied[ $key ] = $cart->cart_contents[ $key ]['data']->get_price();
 
 			$cart->cart_contents[ $key ]['bundletiers'] = array(
 				'tier'     => $tier,
