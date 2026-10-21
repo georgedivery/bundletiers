@@ -132,6 +132,16 @@ try {
 	bt_check( 'fixed pack 65.05 total', array_sum( $lines ), 6505 );
 	bt_check( 'fixed pack split by line', $lines, array( 2169, 4336 ) );
 
+	// More items than the tier needs: every item costs pack price / tier qty.
+	bt_fresh();
+	bt_add( $xl, 1 );
+	bt_add( $xxl, 3 );
+	bt_check( 'fixed pack 4 items = 4 x pack/3', array_sum( bt_lines() ), 8673 );
+	bt_fresh();
+	bt_add( $xl, 2 );
+	bt_add( $xxl, 98 );
+	bt_check( 'fixed pack 100 items = 100 x pack/3', array_sum( bt_lines() ), 216833 );
+
 	// 8. A real sale price: the discount is taken from the current (sale) price.
 	$sale = array( $xl => '20.00', $xxl => '22.00' );
 	foreach ( $sale as $id => $price ) {

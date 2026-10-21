@@ -82,23 +82,26 @@ class Pricing {
 	public static function apply( $base_minor, $qty, $type, $value, $decimals = 2 ) {
 		$base_minor = max( 0, (int) $base_minor );
 		$qty        = max( 1, (int) $qty );
-		return self::apply_mixed( array_fill( 0, $qty, $base_minor ), $type, $value, $decimals );
+		return self::apply_mixed( array_fill( 0, $qty, $base_minor ), $type, $value, $decimals, $qty );
 	}
 
 	/**
 	 * Applies a discount to a pack whose items may have different current prices
 	 * (e.g. an XL at 20.00 and an XXL at 30.00 counted together).
 	 *
-	 * Percent and fixed_item work per item. The fixed_pack type fixes the price of the
-	 * whole pack and shares it between the items in proportion to their prices.
+	 * Percent and fixed_item work per item. The fixed_pack type fixes the price of a pack
+	 * of $tier_qty items, which makes every item cost the pack price divided by $tier_qty;
+	 * with more items than the tier needs, each extra item costs the same. The total is
+	 * shared between the items in proportion to their prices.
 	 *
 	 * @param int[]            $bases    Current unit price of each item, minor units.
 	 * @param string           $type     percent | fixed_item | fixed_pack.
 	 * @param float|int|string $value    See apply().
 	 * @param int              $decimals Currency decimals.
+	 * @param int              $tier_qty Items the fixed_pack price is for (the tier's quantity). 0 means all the items given.
 	 * @return array Same shape as apply(): units, total, full, saved, unit_price.
 	 */
-	public static function apply_mixed( array $bases, $type, $value, $decimals = 2 ) {
+	public static function apply_mixed( array $bases, $type, $value, $decimals = 2, $tier_qty = 0 ) {
 		$bases = array_map(
 			static function ( $b ) {
 				return max( 0, (int) $b );
@@ -126,8 +129,11 @@ class Pricing {
 				break;
 
 			case self::FIXED_PACK:
+				// The pack price is for $tier_qty items; every item costs the same share of it.
+				$pack_qty = (int) $tier_qty >= 1 ? (int) $tier_qty : $count;
+				$pack     = max( 0, self::to_minor( $value, $decimals ) );
 				// A discount can never raise the price.
-				$total = min( $full, max( 0, self::to_minor( $value, $decimals ) ) );
+				$total = min( $full, self::div_round( $pack * $count, $pack_qty ) );
 				$units = self::allocate( $total, $bases );
 				break;
 

@@ -53,6 +53,18 @@ check( 'fixed_pack total', $r['total'], 6505 );
 check( 'fixed_pack units', $r['units'], array( 2169, 2168, 2168 ) );
 check( 'fixed_pack units sum', array_sum( $r['units'] ), 6505 );
 check( 'fixed_pack unit_price', $r['unit_price'], 2168 );
+// Fixed pack price above the tier's quantity: every item costs pack price / tier qty.
+$bases = function ( $n ) {
+	return array_fill( 0, $n, 2551 );
+};
+check( 'fixed_pack x3 on tier 3', Pricing::apply_mixed( $bases( 3 ), 'fixed_pack', 65.05, 2, 3 )['total'], 6505 );
+check( 'fixed_pack x4 on tier 3', Pricing::apply_mixed( $bases( 4 ), 'fixed_pack', 65.05, 2, 3 )['total'], 8673 );
+check( 'fixed_pack x5 on tier 3', Pricing::apply_mixed( $bases( 5 ), 'fixed_pack', 65.05, 2, 3 )['total'], 10842 );
+check( 'fixed_pack x100 on tier 3', Pricing::apply_mixed( $bases( 100 ), 'fixed_pack', 65.05, 2, 3 )['total'], 216833 );
+check( 'fixed_pack x100 units sum', array_sum( Pricing::apply_mixed( $bases( 100 ), 'fixed_pack', 65.05, 2, 3 )['units'] ), 216833 );
+check( 'fixed_pack above tier never above full price', Pricing::apply_mixed( $bases( 10 ), 'fixed_pack', 99, 2, 3 )['total'], 25510 );
+check( 'fixed_pack without tier qty = all items', Pricing::apply_mixed( $bases( 4 ), 'fixed_pack', 65.05, 2 )['total'], 6505 );
+check( 'fixed_pack mixed prices x4 on tier 3', array_sum( Pricing::apply_mixed( array( 2551, 2551, 5102, 2551 ), 'fixed_pack', 65.05, 2, 3 )['units'] ), Pricing::apply_mixed( array( 2551, 2551, 5102, 2551 ), 'fixed_pack', 65.05, 2, 3 )['total'] );
 check( 'fixed_pack cap at full', Pricing::apply( 1000, 2, 'fixed_pack', 99 )['total'], 2000 );
 check( 'fixed_pack negative', Pricing::apply( 1000, 2, 'fixed_pack', -5 )['total'], 0 );
 

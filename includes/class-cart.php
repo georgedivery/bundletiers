@@ -137,7 +137,7 @@ class Cart {
 		foreach ( $keys as $key ) {
 			$bases = array_merge( $bases, array_fill( 0, (int) $cart->cart_contents[ $key ]['quantity'], $this->base[ $key ] ) );
 		}
-		$result = Pricing::apply_mixed( $bases, $tier['type'], $tier['value'], $decimals );
+		$result = Pricing::apply_mixed( $bases, $tier['type'], $tier['value'], $decimals, (int) $tier['qty'] );
 
 		$offset = 0;
 		foreach ( $keys as $key ) {
