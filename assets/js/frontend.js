@@ -3,6 +3,12 @@
 
 	var cfg = window.bundletiersConfig || {};
 
+	// wp_localize_script hands numbers over as strings.
+	cfg.decimals = parseInt( cfg.decimals, 10 );
+	if ( isNaN( cfg.decimals ) ) {
+		cfg.decimals = 2;
+	}
+
 	/* ---------- Pricing maths (port of includes/class-pricing.php) ---------- */
 
 	function divRound( a, b ) {
@@ -75,6 +81,10 @@
 		this.live = el.querySelector( '.bt-live' );
 		this.bind();
 		this.refresh( true );
+		// WooCommerce may have chosen a variation (default attributes) before we started listening.
+		if ( this.state.variable && this.form && $ ) {
+			$( this.form ).trigger( 'check_variations' );
+		}
 	}
 
 	Selector.prototype.bind = function () {
@@ -218,9 +228,45 @@
 
 	window.BundleTiers = { applyTier: applyTier, formatMoney: formatMoney, toMinor: toMinor };
 
-	document.addEventListener( 'DOMContentLoaded', function () {
+	function initSelectors() {
 		Array.prototype.forEach.call( document.querySelectorAll( '.bt-selector[data-bundletiers]' ), function ( el ) {
-			el.bundletiers = new Selector( el );
+			if ( el.bundletiers ) {
+				return;
+			}
+			try {
+				el.bundletiers = new Selector( el );
+			} catch ( e ) {
+				// One selector with bad data must not stop the others.
+				el.bundletiers = false;
+			}
 		} );
+	}
+
+	// The script may run after DOMContentLoaded (delayed or deferred by an optimiser).
+	function ready( fn ) {
+		if ( document.readyState !== 'loading' ) {
+			fn();
+		} else {
+			document.addEventListener( 'DOMContentLoaded', fn );
+		}
+	}
+
+	ready( function () {
+		initSelectors();
+
+		// A quick view, an AJAX load or a page builder can print a selector later.
+		if ( 'MutationObserver' in window && document.body ) {
+			var queued = false;
+			new window.MutationObserver( function () {
+				if ( queued ) {
+					return;
+				}
+				queued = true;
+				window.setTimeout( function () {
+					queued = false;
+					initSelectors();
+				}, 50 );
+			} ).observe( document.body, { childList: true, subtree: true } );
+		}
 	} );
 }( window.jQuery ) );

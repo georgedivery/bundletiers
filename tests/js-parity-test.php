@@ -25,7 +25,7 @@ for ( $i = 0; $i < 3000; $i++ ) {
 $js = <<<'JS'
 const fs = require('fs');
 global.window = { jQuery: undefined, bundletiersConfig: { decimals: 2, decimalSep: '.', thousandSep: ',', priceFormat: '%2$s %1$s', symbol: '€' } };
-global.document = { addEventListener() {} };
+global.document = { readyState: 'loading', addEventListener() {} };
 eval(fs.readFileSync(process.argv[2], 'utf8'));
 const cases = JSON.parse(fs.readFileSync(0, 'utf8'));
 let bad = 0;
@@ -38,6 +38,21 @@ cases.forEach(([base, qty, type, value, dec, exp]) => {
 const f = window.BundleTiers.formatMoney;
 const fmt = [[2551,'25.51 €'],[0,'0.00 €'],[5,'0.05 €'],[123456789,'1,234,567.89 €']];
 fmt.forEach(([m, e]) => { if (f(m) !== e) { bad++; console.log('FMT', m, f(m), e); } });
+// Start-up: right away when the page is already loaded, on DOMContentLoaded otherwise; decimals may be a string.
+const src = fs.readFileSync(process.argv[2], 'utf8');
+function load(readyState, decimals) {
+  const calls = { query: 0, listen: [] };
+  const doc = { readyState, body: {}, addEventListener(type) { calls.listen.push(type); }, querySelectorAll() { calls.query++; return []; } };
+  const win = { jQuery: undefined, bundletiersConfig: { decimals, decimalSep: '.', thousandSep: ',', priceFormat: '%2$s %1$s', symbol: '€' } };
+  new Function('window', 'document', src)(win, doc);
+  return { calls, win };
+}
+const early = load('loading', 2);
+if (early.calls.query !== 0 || early.calls.listen.indexOf('DOMContentLoaded') < 0) { bad++; console.log('INIT while loading', JSON.stringify(early.calls)); }
+const late = load('complete', 2);
+if (late.calls.query < 1 || late.calls.listen.indexOf('DOMContentLoaded') >= 0) { bad++; console.log('INIT after load', JSON.stringify(late.calls)); }
+const stringy = load('loading', '0');
+if (stringy.win.BundleTiers.formatMoney(120000) !== '120,000 €') { bad++; console.log('DECIMALS as string', stringy.win.BundleTiers.formatMoney(120000)); }
 console.log(bad ? bad + ' mismatches' : 'JS matches PHP on ' + cases.length + ' cases + formatting');
 process.exit(bad ? 1 : 0);
 JS;
