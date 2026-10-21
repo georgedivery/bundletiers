@@ -241,7 +241,7 @@ class Cart {
 	public function item_data( $item_data, $cart_item ) {
 		if ( ! empty( $cart_item['bundletiers'] ) && $cart_item['bundletiers']['saved'] > 0 ) {
 			$item_data[] = array(
-				'key'   => Settings::get( 'text_cart_label' ),
+				'key'   => '' !== trim( (string) Settings::get( 'text_cart_label' ) ) ? Settings::get( 'text_cart_label' ) : __( 'Bundle', 'bundletiers' ),
 				'value' => Tiers::label( $cart_item['bundletiers']['tier'] ) . ' (' . self::describe( $cart_item['bundletiers'] ) . ')',
 			);
 		}

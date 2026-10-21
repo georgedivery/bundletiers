@@ -97,14 +97,14 @@ class Settings_Page extends \WC_Settings_Page {
 				'id'      => $o . '[style_bg]',
 			),
 			array(
-				'title'   => __( 'Border colour', 'bundletiers' ),
+				'title'   => __( 'Border color', 'bundletiers' ),
 				'type'    => 'color',
 				'default' => '#d5d7dd',
 				'css'     => 'width:6em;',
 				'id'      => $o . '[style_border_color]',
 			),
 			array(
-				'title'    => __( 'Accent colour', 'bundletiers' ),
+				'title'    => __( 'Accent color', 'bundletiers' ),
 				'type'     => 'color',
 				'default'  => '#111111',
 				'css'      => 'width:6em;',

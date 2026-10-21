@@ -104,7 +104,7 @@ class Tiers {
 			return array();
 		}
 
-		$default_key = isset( $raw['default'] ) ? (string) $raw['default'] : null;
+		$default_key = isset( $raw['default'] ) && is_scalar( $raw['default'] ) ? (string) $raw['default'] : null;
 		unset( $raw['default'] );
 
 		$tiers = array();
@@ -113,7 +113,7 @@ class Tiers {
 			if ( ! is_array( $row ) ) {
 				continue;
 			}
-			$qty = isset( $row['qty'] ) ? (int) $row['qty'] : 0;
+			$qty = isset( $row['qty'] ) && is_scalar( $row['qty'] ) ? (int) $row['qty'] : 0;
 			if ( $qty < 1 ) {
 				$messages[] = __( 'A tier with a quantity below 1 was removed.', 'bundletiers' );
 				continue;
@@ -130,12 +130,12 @@ class Tiers {
 			}
 			$seen[ $qty ] = true;
 
-			$type = isset( $row['type'] ) ? (string) $row['type'] : '';
+			$type = isset( $row['type'] ) && is_scalar( $row['type'] ) ? (string) $row['type'] : '';
 			if ( ! in_array( $type, self::types(), true ) ) {
 				$type = Pricing::PERCENT;
 			}
 
-			$value = isset( $row['value'] ) ? self::parse_number( $row['value'] ) : 0.0;
+			$value = isset( $row['value'] ) && is_scalar( $row['value'] ) ? self::parse_number( $row['value'] ) : 0.0;
 			$value = max( 0.0, $value );
 			if ( Pricing::PERCENT === $type ) {
 				$value = min( 100.0, $value );
@@ -145,8 +145,8 @@ class Tiers {
 				'qty'     => $qty,
 				'type'    => $type,
 				'value'   => $value,
-				'label'   => isset( $row['label'] ) ? sanitize_text_field( (string) $row['label'] ) : '',
-				'badge'   => isset( $row['badge'] ) ? sanitize_text_field( (string) $row['badge'] ) : '',
+				'label'   => isset( $row['label'] ) && is_scalar( $row['label'] ) ? sanitize_text_field( (string) $row['label'] ) : '',
+				'badge'   => isset( $row['badge'] ) && is_scalar( $row['badge'] ) ? sanitize_text_field( (string) $row['badge'] ) : '',
 				'default' => ( (string) $key === $default_key ),
 			);
 		}

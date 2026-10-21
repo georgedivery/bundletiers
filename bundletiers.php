@@ -3,7 +3,7 @@
  * Plugin Name:       BundleTiers – Bundle Discounts for WooCommerce
  * Description:       Quantity-tier bundle discounts (1 / 2 / 3 pcs) for WooCommerce products, with variations counted together.
  * Version:           0.1.0
- * Requires at least: 6.4
+ * Requires at least: 6.5
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
  * WC requires at least: 8.5

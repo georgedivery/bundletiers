@@ -34,11 +34,10 @@ final class Plugin {
 	}
 
 	/**
-	 * Loads translations and, when WooCommerce is active, the modules.
+	 * Loads the modules when WooCommerce is active. Translations load by themselves
+	 * (WordPress 6.5 and later read the plugin's languages folder from its headers).
 	 */
 	private function __construct() {
-		load_plugin_textdomain( 'bundletiers', false, dirname( plugin_basename( BUNDLETIERS_FILE ) ) . '/languages' );
-
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			add_action( 'admin_notices', array( $this, 'missing_woocommerce_notice' ) );
 			return;

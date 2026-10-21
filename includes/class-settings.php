@@ -71,7 +71,7 @@ class Settings {
 	}
 
 	/**
-	 * Cleans one style setting: a hex colour, or a whole number inside its range.
+	 * Cleans one style setting: a hex color, or a whole number inside its range.
 	 *
 	 * @param string $key   Setting key (style_bg, style_border_color, style_accent, style_border_width, style_radius).
 	 * @param mixed  $value Raw value.

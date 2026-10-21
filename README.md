@@ -15,7 +15,7 @@ BundleTiers adds quantity bundles to your WooCommerce product page: **1 pc, 2 pc
 - Respects stock, sold-individually and min/max quantity rules
 - Shows the bundle in the cart, checkout, mini-cart, admin order and emails
 - Optional: keep coupons off bundle items
-- Card background, border colour, border width, corner radius and accent colour in the settings; the font comes from your theme
+- Card background, border color, border width, corner radius and accent color in the settings; the font comes from your theme
 - Works with HPOS and the Cart and Checkout blocks
 - English source strings, Bulgarian (bg_BG) translation included
 

@@ -129,11 +129,11 @@ msgid "Card background"
 msgstr ""
 
 #: includes/class-settings-page.php:100
-msgid "Border colour"
+msgid "Border color"
 msgstr ""
 
 #: includes/class-settings-page.php:107
-msgid "Accent colour"
+msgid "Accent color"
 msgstr ""
 
 #: includes/class-settings-page.php:111

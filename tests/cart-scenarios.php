@@ -189,6 +189,34 @@ try {
 	bt_check( 'bundletiers_base_price filter sets the starting price', array_sum( bt_lines() ), 2 * Pricing::apply( 4000, 1, 'percent', 10 )['total'] );
 	remove_filter( 'bundletiers_base_price', $base_filter );
 
+	// 7f. Tier data that is not text cannot raise PHP warnings when saved.
+	$notices = array();
+	set_error_handler(
+		static function ( $no, $message ) use ( &$notices ) {
+			$notices[] = $message;
+			return true;
+		}
+	);
+	$odd = BundleTiers\Tiers::sanitize(
+		array(
+			'a'       => array( 'qty' => 1, 'type' => array( 'x' ), 'value' => array( 1 ), 'label' => array( 'l' ), 'badge' => array( 'b' ) ),
+			'default' => array( 'a' ),
+		)
+	);
+	restore_error_handler();
+	bt_check( 'array values in a tier raise no warnings', $notices, array() );
+	bt_check( 'array values fall back to safe ones', array( $odd[0]['type'], $odd[0]['value'], $odd[0]['label'], $odd[0]['badge'] ), array( 'percent', 0.0, '', '' ) );
+
+	// 7g. An empty cart label still names the bundle in the cart.
+	bt_settings( array( 'text_cart_label' => '' ) );
+	bt_fresh();
+	bt_add( $xl, 2 );
+	bt_lines();
+	$cart_item = array_values( $cart->get_cart() )[0];
+	$rows      = apply_filters( 'woocommerce_get_item_data', array(), $cart_item );
+	bt_check( 'empty label falls back to the default name in the cart', wp_list_pluck( $rows, 'key' ), array( __( 'Bundle', 'bundletiers' ) ) );
+	bt_settings();
+
 	// 8. A real sale price: the discount is taken from the current (sale) price.
 	$sale = array( $xl => '20.00', $xxl => '22.00' );
 	foreach ( $sale as $id => $price ) {

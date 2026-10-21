@@ -1,7 +1,7 @@
 === BundleTiers – Bundle Discounts for WooCommerce ===
 Contributors: webbeb
 Tags: woocommerce, bundle, quantity discount, tiered pricing, volume discount
-Requires at least: 6.4
+Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce

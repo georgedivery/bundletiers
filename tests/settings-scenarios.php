@@ -73,6 +73,12 @@ try {
 	bt_check( 'saved: width', $saved['style_border_width'] ?? null, 4 );
 	bt_check( 'saved: radius clamped', $saved['style_radius'] ?? null, 40 );
 
+	// The tier editor labels every field for screen readers.
+	ob_start();
+	BundleTiers\Tiers_Editor::render( Settings::OPTION . '[tiers]', BundleTiers\Tiers::defaults() );
+	$editor = ob_get_clean();
+	bt_check( 'every field of a tier row has an aria-label', substr_count( $editor, 'aria-label=' ) >= 6 * ( count( BundleTiers\Tiers::defaults() ) + 1 ), true );
+
 	// Select fields only keep a choice the field offers.
 	foreach ( array( 'position' => array( 'after', 'before' ), 'style' => array( 'list', 'cards' ) ) as $key => $choices ) {
 		$_POST[ Settings::OPTION ] = array( $key => $choices[0] );
