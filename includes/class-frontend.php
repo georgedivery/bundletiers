@@ -22,6 +22,13 @@ class Frontend {
 	private $rendered = array();
 
 	/**
+	 * Whether the selector stylesheet and script were queued on this request.
+	 *
+	 * @var bool
+	 */
+	private $assets_loaded = false;
+
+	/**
 	 * Registers the product page hooks.
 	 */
 	public function __construct() {
@@ -128,6 +135,10 @@ class Frontend {
 		if ( ! self::supports( $product ) ) {
 			return $template;
 		}
+		// A field printed for another product (a related-products or side-cart list) keeps its own quantity.
+		if ( ! empty( $args['product_name'] ) && $args['product_name'] !== $product->get_title() ) {
+			return $template;
+		}
 		$path = locate_template( 'bundletiers/quantity-hidden.php' );
 		return $path ? $path : BUNDLETIERS_DIR . 'templates/bundletiers/quantity-hidden.php';
 	}
@@ -142,6 +153,8 @@ class Frontend {
 			return;
 		}
 		$this->rendered[] = $product->get_id();
+		// The selector can be printed outside a product page (a shortcode, a page builder), so queue its assets here too.
+		$this->load_assets();
 
 		$decimals  = wc_get_price_decimals();
 		$variable  = $product->is_type( 'variable' );
@@ -241,12 +254,23 @@ class Frontend {
 	}
 
 	/**
-	 * Loads the selector assets on product pages that use bundles.
+	 * Loads the selector assets early on product pages that use bundles.
 	 */
 	public function enqueue() {
 		if ( ! is_product() || ! self::supports( wc_get_product( get_queried_object_id() ) ) ) {
 			return;
 		}
+		$this->load_assets();
+	}
+
+	/**
+	 * Queues the selector stylesheet and script (once per request).
+	 */
+	private function load_assets() {
+		if ( $this->assets_loaded ) {
+			return;
+		}
+		$this->assets_loaded = true;
 		wp_enqueue_style( 'bundletiers', BUNDLETIERS_URL . 'assets/css/frontend.css', array(), BUNDLETIERS_VERSION );
 		wp_add_inline_style( 'bundletiers', Settings::style_css() );
 		wp_enqueue_script( 'bundletiers', BUNDLETIERS_URL . 'assets/js/frontend.js', array( 'jquery' ), BUNDLETIERS_VERSION, true );

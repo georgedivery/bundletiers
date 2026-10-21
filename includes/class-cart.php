@@ -51,6 +51,31 @@ class Cart {
 		add_action( 'woocommerce_cart_emptied', array( $this, 'reset_base' ) );
 		add_filter( 'woocommerce_get_item_data', array( $this, 'item_data' ), 10, 2 );
 		add_filter( 'woocommerce_coupon_is_valid_for_product', array( $this, 'coupon_valid_for_product' ), 10, 4 );
+		add_filter( 'woocommerce_add_to_cart_quantity', array( $this, 'quantity_from_choice' ), 10, 2 );
+	}
+
+	/**
+	 * Uses the card that was chosen when the page's script could not set the quantity
+	 * (a quick view that never loaded it): the form posts the chosen tier, and it is only
+	 * taken when it is one of the product's own tiers.
+	 *
+	 * @param int $quantity   Quantity being added.
+	 * @param int $product_id Product being added.
+	 * @return int
+	 */
+	public function quantity_from_choice( $quantity, $product_id ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- WooCommerce reads the add to cart request the same way.
+		if ( ! isset( $_REQUEST['bundletiers_tier'] ) || ! is_scalar( $_REQUEST['bundletiers_tier'] ) ) {
+			return $quantity;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+		$choice = absint( wp_unslash( $_REQUEST['bundletiers_tier'] ) );
+		foreach ( Tiers::for_product( $product_id ) as $tier ) {
+			if ( (int) $tier['qty'] === $choice ) {
+				return $choice;
+			}
+		}
+		return $quantity;
 	}
 
 	/**
