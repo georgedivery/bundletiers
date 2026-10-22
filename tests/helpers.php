@@ -11,6 +11,11 @@ function bt_require_local_site() {
 	if ( ! preg_match( '/(\.(local|test|localhost)|^local\..+)$/', $host ) ) {
 		WP_CLI::error( 'Refusing to run: this is not a local site.' );
 	}
+
+	// A theme may force settings through these filters (Brivanto's does). The scenarios test the plugin's
+	// own settings and put back what they changed, so they must read and write the stored values.
+	remove_all_filters( 'option_bundletiers_settings' );
+	remove_all_filters( 'pre_option_bundletiers_settings' );
 }
 
 /**
