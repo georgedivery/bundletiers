@@ -14,6 +14,9 @@
 	color: var(--bt-text);
 }
 
+/* Below the add to cart button the cards need air above them. */
+.bt-selector.bt-position-after { margin-top: 1.75em; }
+
 .bt-selector .bt-options {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -88,15 +91,92 @@
 .bt-selector .bt-save { color: var(--bt-accent); }
 .bt-selector [hidden] { display: none !important; }
 
-/* List style: one row per tier. */
-.bt-selector.bt-style-list .bt-options { grid-template-columns: 1fr; }
+/* Colors of the "you save" pill (a soft green, whatever the accent). */
+.bt-selector {
+	--bt-save-bg: #e1f5ee;
+	--bt-save-text: #0f6e56;
+}
+
+/* Cards and List share the modern look: a round indicator, a pill for the saving, a tinted selected state. */
+.bt-selector.bt-style-cards .bt-card,
+.bt-selector.bt-style-list .bt-card {
+	position: relative;
+	background: var(--bt-bg);
+	transition: border-color .15s, background-color .15s, box-shadow .15s, transform .15s;
+}
+
+.bt-selector.bt-style-cards .bt-card::before,
+.bt-selector.bt-style-list .bt-card::before {
+	content: "";
+	flex: none;
+	width: 18px;
+	height: 18px;
+	box-sizing: border-box;
+	border: 1.5px solid var(--bt-muted);
+	border-radius: 50%;
+	background: transparent;
+	transition: border .15s;
+}
+
+.bt-selector.bt-style-cards .bt-radio:checked + .bt-card,
+.bt-selector.bt-style-list .bt-radio:checked + .bt-card {
+	background-color: color-mix(in srgb, var(--bt-accent) 7%, var(--bt-bg));
+}
+
+.bt-selector.bt-style-cards .bt-radio:checked + .bt-card::before,
+.bt-selector.bt-style-list .bt-radio:checked + .bt-card::before {
+	border: 5px solid var(--bt-accent);
+}
+
+.bt-selector.bt-style-cards .bt-option:hover .bt-radio:not(:checked):not(:disabled) + .bt-card,
+.bt-selector.bt-style-list .bt-option:hover .bt-radio:not(:checked):not(:disabled) + .bt-card {
+	border-color: var(--bt-muted);
+}
+
+.bt-selector.bt-style-cards .bt-save,
+.bt-selector.bt-style-list .bt-save {
+	align-self: flex-start;
+	margin-top: 4px;
+	padding: 2px 8px;
+	background: var(--bt-save-bg);
+	color: var(--bt-save-text);
+	font-size: .78em;
+	font-weight: 500;
+	line-height: 1.5;
+	border-radius: 999px;
+}
+
+.bt-selector.bt-style-cards .bt-badge,
+.bt-selector.bt-style-list .bt-badge {
+	border-radius: 999px;
+	padding: 2px 10px;
+}
+
+/* Cards: tall cards, the indicator on top, the badge centered on the top edge. */
+.bt-selector.bt-style-cards .bt-card { gap: 4px; padding: 16px 14px 14px; }
+.bt-selector.bt-style-cards .bt-option.has-badge .bt-card { padding-top: 22px; }
+.bt-selector.bt-style-cards .bt-card::before { margin-bottom: 4px; }
+.bt-selector.bt-style-cards .bt-badge { left: 50%; transform: translate(-50%, -50%); }
+.bt-selector.bt-style-cards .bt-total { font-size: 1.35em; }
+
+/* List: one row per tier, indicator on the left, price on the right, the badge on the top edge. */
+.bt-selector.bt-style-list .bt-options { display: flex; flex-direction: column; gap: 10px; }
 .bt-selector.bt-style-list .bt-card {
 	display: grid;
-	grid-template-columns: 1fr auto;
-	align-items: baseline;
-	column-gap: 12px;
+	grid-template-columns: auto 1fr auto;
+	grid-template-rows: auto auto auto;
+	align-items: center;
+	column-gap: 14px;
+	row-gap: 2px;
+	padding: 14px 16px;
 }
-.bt-selector.bt-style-list .bt-total { grid-column: 2; grid-row: 1; text-align: right; }
-.bt-selector.bt-style-list .bt-full { grid-column: 2; grid-row: 2; text-align: right; }
-.bt-selector.bt-style-list .bt-unit,
-.bt-selector.bt-style-list .bt-save { grid-column: 1; }
+.bt-selector.bt-style-list .bt-option.has-badge .bt-card { padding-top: 14px; }
+.bt-selector.bt-style-list .bt-card::before { grid-column: 1; grid-row: 1 / span 3; width: 20px; height: 20px; }
+.bt-selector.bt-style-list .bt-label { grid-column: 2; grid-row: 1; }
+.bt-selector.bt-style-list .bt-unit { grid-column: 2; grid-row: 2; }
+.bt-selector.bt-style-list .bt-save { grid-column: 2; grid-row: 3; justify-self: start; }
+.bt-selector.bt-style-list .bt-total { grid-column: 3; grid-row: 1; text-align: right; }
+.bt-selector.bt-style-list .bt-full { grid-column: 3; grid-row: 2; text-align: right; }
+.bt-selector.bt-style-list .bt-badge { left: auto; right: 14px; transform: translateY(-50%); }
+
+/* Minimal: the plain bordered card (the base rules above), nothing added. */

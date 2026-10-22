@@ -51,6 +51,7 @@ try {
 	$frontend->render( $product );
 	$html = ob_get_clean();
 	bt_check( 'selector is printed for a simple product', false !== strpos( $html, 'bt-selector' ), true );
+	bt_check( 'the selector carries its position class', 1 === preg_match( '/bt-position-(before|after)/', $html ), true );
 	bt_check( 'rendering the selector queues its script', wp_script_is( 'bundletiers', 'enqueued' ), true );
 	bt_check( 'rendering the selector queues its stylesheet', wp_style_is( 'bundletiers', 'enqueued' ), true );
 	bt_check( 'three cards', substr_count( $html, 'class="bt-radio"' ), 3 );

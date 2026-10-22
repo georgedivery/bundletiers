@@ -207,6 +207,18 @@ class Tiers {
 	}
 
 	/**
+	 * Text of a tier's badge. The stock badge ("Most popular"), which older data holds in English,
+	 * follows the language of the site; a badge somebody typed is shown as typed.
+	 *
+	 * @param array $tier Tier.
+	 * @return string
+	 */
+	public static function badge( array $tier ) {
+		$badge = isset( $tier['badge'] ) && is_scalar( $tier['badge'] ) ? (string) $tier['badge'] : '';
+		return 'Most popular' === $badge ? __( 'Most popular', 'bundletiers' ) : $badge;
+	}
+
+	/**
 	 * Parses a typed number. A lone comma with no dot is a decimal comma
 	 * ("45,92"); otherwise WooCommerce's own decimal handling applies.
 	 *

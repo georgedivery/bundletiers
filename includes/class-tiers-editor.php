@@ -29,10 +29,10 @@ class Tiers_Editor {
 		echo '<table class="widefat bt-tiers"><thead><tr>';
 		echo '<th class="bt-col-default">' . esc_html__( 'Default', 'bundletiers' ) . '</th>';
 		echo '<th class="bt-col-qty">' . esc_html__( 'Qty', 'bundletiers' ) . '</th>';
-		echo '<th>' . esc_html__( 'Discount', 'bundletiers' ) . '</th>';
+		echo '<th class="bt-col-type">' . esc_html__( 'Discount', 'bundletiers' ) . '</th>';
 		echo '<th class="bt-col-value">' . esc_html__( 'Value', 'bundletiers' ) . '</th>';
-		echo '<th>' . esc_html__( 'Label', 'bundletiers' ) . '</th>';
-		echo '<th>' . esc_html__( 'Badge', 'bundletiers' ) . '</th>';
+		echo '<th class="bt-col-label">' . esc_html__( 'Label', 'bundletiers' ) . '</th>';
+		echo '<th class="bt-col-badge">' . esc_html__( 'Badge', 'bundletiers' ) . '</th>';
 		echo '<th class="bt-col-remove"></th>';
 		echo '</tr></thead><tbody>';
 		foreach ( array_values( $tiers ) as $i => $tier ) {
@@ -78,16 +78,16 @@ class Tiers_Editor {
 	private static function row( $name, $key, array $tier, array $types ) {
 		$base = $name . '[' . $key . ']';
 		echo '<tr class="bt-row">';
-		echo '<td class="bt-col-default"><input type="radio" aria-label="' . esc_attr__( 'Default', 'bundletiers' ) . '" name="' . esc_attr( $name . '[default]' ) . '" value="' . esc_attr( $key ) . '"' . checked( ! empty( $tier['default'] ), true, false ) . ' /></td>';
-		echo '<td><input type="number" min="1" step="1" class="bt-qty" aria-label="' . esc_attr__( 'Qty', 'bundletiers' ) . '" name="' . esc_attr( $base . '[qty]' ) . '" value="' . esc_attr( (string) $tier['qty'] ) . '" /></td>';
-		echo '<td><select aria-label="' . esc_attr__( 'Discount', 'bundletiers' ) . '" name="' . esc_attr( $base . '[type]' ) . '">';
+		echo '<td class="bt-col-default" data-label="' . esc_attr__( 'Default', 'bundletiers' ) . '"><input type="radio" aria-label="' . esc_attr__( 'Default', 'bundletiers' ) . '" name="' . esc_attr( $name . '[default]' ) . '" value="' . esc_attr( $key ) . '"' . checked( ! empty( $tier['default'] ), true, false ) . ' /></td>';
+		echo '<td class="bt-col-qty" data-label="' . esc_attr__( 'Qty', 'bundletiers' ) . '"><input type="number" min="1" step="1" class="bt-qty" aria-label="' . esc_attr__( 'Qty', 'bundletiers' ) . '" name="' . esc_attr( $base . '[qty]' ) . '" value="' . esc_attr( (string) $tier['qty'] ) . '" /></td>';
+		echo '<td class="bt-col-type" data-label="' . esc_attr__( 'Discount', 'bundletiers' ) . '"><select aria-label="' . esc_attr__( 'Discount', 'bundletiers' ) . '" name="' . esc_attr( $base . '[type]' ) . '">';
 		foreach ( $types as $type => $label ) {
 			echo '<option value="' . esc_attr( $type ) . '"' . selected( $tier['type'], $type, false ) . '>' . esc_html( $label ) . '</option>';
 		}
 		echo '</select></td>';
-		echo '<td><input type="text" inputmode="decimal" class="wc_input_decimal bt-value" aria-label="' . esc_attr__( 'Value', 'bundletiers' ) . '" name="' . esc_attr( $base . '[value]' ) . '" value="' . esc_attr( '' === $tier['value'] ? '' : wc_format_localized_decimal( (string) $tier['value'] ) ) . '" /></td>';
-		echo '<td><input type="text" aria-label="' . esc_attr__( 'Label', 'bundletiers' ) . '" name="' . esc_attr( $base . '[label]' ) . '" value="' . esc_attr( $tier['label'] ) . '" placeholder="' . esc_attr__( 'e.g. 2 pcs', 'bundletiers' ) . '" /></td>';
-		echo '<td><input type="text" aria-label="' . esc_attr__( 'Badge', 'bundletiers' ) . '" name="' . esc_attr( $base . '[badge]' ) . '" value="' . esc_attr( $tier['badge'] ) . '" placeholder="' . esc_attr__( 'e.g. Best value', 'bundletiers' ) . '" /></td>';
+		echo '<td class="bt-col-value" data-label="' . esc_attr__( 'Value', 'bundletiers' ) . '"><input type="text" inputmode="decimal" class="wc_input_decimal bt-value" aria-label="' . esc_attr__( 'Value', 'bundletiers' ) . '" name="' . esc_attr( $base . '[value]' ) . '" value="' . esc_attr( '' === $tier['value'] ? '' : wc_format_localized_decimal( (string) $tier['value'] ) ) . '" /></td>';
+		echo '<td class="bt-col-label" data-label="' . esc_attr__( 'Label', 'bundletiers' ) . '"><input type="text" aria-label="' . esc_attr__( 'Label', 'bundletiers' ) . '" name="' . esc_attr( $base . '[label]' ) . '" value="' . esc_attr( $tier['label'] ) . '" placeholder="' . esc_attr__( 'e.g. 2 pcs', 'bundletiers' ) . '" /></td>';
+		echo '<td class="bt-col-badge" data-label="' . esc_attr__( 'Badge', 'bundletiers' ) . '"><input type="text" aria-label="' . esc_attr__( 'Badge', 'bundletiers' ) . '" name="' . esc_attr( $base . '[badge]' ) . '" value="' . esc_attr( $tier['badge'] ) . '" placeholder="' . esc_attr__( 'e.g. Best value', 'bundletiers' ) . '" /></td>';
 		echo '<td class="bt-col-remove"><button type="button" class="button-link bt-remove" aria-label="' . esc_attr__( 'Remove tier', 'bundletiers' ) . '">&times;</button></td>';
 		echo '</tr>';
 	}

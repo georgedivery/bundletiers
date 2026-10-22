@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 
 use BundleTiers\Frontend;
 ?>
-<fieldset class="bt-selector bt-style-<?php echo esc_attr( $settings['style'] ); ?>" data-bundletiers="<?php echo esc_attr( wp_json_encode( $data ) ); ?>">
+<fieldset class="bt-selector bt-style-<?php echo esc_attr( $settings['style'] ); ?> bt-position-<?php echo esc_attr( $settings['position'] ); ?>" data-bundletiers="<?php echo esc_attr( wp_json_encode( $data ) ); ?>">
 	<legend class="screen-reader-text"><?php esc_html_e( 'Choose quantity', 'bundletiers' ); ?></legend>
 	<div class="bt-options">
 		<?php foreach ( $tiers as $i => $tier ) : ?>

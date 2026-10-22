@@ -97,7 +97,7 @@ msgid "Appearance"
 msgstr ""
 
 #: includes/class-settings-page.php:69
-msgid "The cards use the font of your theme. Colours and shape can be set here."
+msgid "The cards use the font of your theme. Colors and shape can be set here."
 msgstr ""
 
 #: includes/class-settings-page.php:73
@@ -289,4 +289,24 @@ msgstr[1] ""
 
 #: templates/bundletiers/selector.php:22
 msgid "Choose quantity"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Style presets and preview"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Minimal"
+msgstr ""
+
+#: includes/class-settings.php
+msgid "Choose a style to start from, then adjust the colors below. The preview shows your default tiers and updates as you type; the font comes from your theme."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Text color"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Text on the cards. Leave empty to use the color of your theme."
 msgstr ""

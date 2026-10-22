@@ -173,6 +173,7 @@ class Frontend {
 				array(
 					'result'   => $result,
 					'label'    => Tiers::label( $tier ),
+					'badge'    => Tiers::badge( $tier ),
 					'disabled' => ( $max >= 0 && $tier['qty'] > $max ) || $tier['qty'] < $min,
 				)
 			);
@@ -271,9 +272,9 @@ class Frontend {
 			return;
 		}
 		$this->assets_loaded = true;
-		wp_enqueue_style( 'bundletiers', BUNDLETIERS_URL . 'assets/css/frontend.css', array(), BUNDLETIERS_VERSION );
+		wp_enqueue_style( 'bundletiers', BUNDLETIERS_URL . 'assets/css/frontend.css', array(), Plugin::asset_version( 'assets/css/frontend.css' ) );
 		wp_add_inline_style( 'bundletiers', Settings::style_css() );
-		wp_enqueue_script( 'bundletiers', BUNDLETIERS_URL . 'assets/js/frontend.js', array( 'jquery' ), BUNDLETIERS_VERSION, true );
+		wp_enqueue_script( 'bundletiers', BUNDLETIERS_URL . 'assets/js/frontend.js', array( 'jquery' ), Plugin::asset_version( 'assets/js/frontend.js' ), true );
 		wp_localize_script(
 			'bundletiers',
 			'bundletiersConfig',

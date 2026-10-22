@@ -66,8 +66,14 @@ class Settings_Page extends \WC_Settings_Page {
 			array(
 				'title' => __( 'Appearance', 'bundletiers' ),
 				'type'  => 'title',
-				'desc'  => __( 'The cards use the font of your theme. Colours and shape can be set here.', 'bundletiers' ),
+				'desc'  => __( 'The cards use the font of your theme. Colors and shape can be set here.', 'bundletiers' ),
 				'id'    => 'bundletiers_look_section',
+			),
+			array(
+				'title'     => __( 'Style presets and preview', 'bundletiers' ),
+				'type'      => 'bundletiers_preview',
+				'id'        => $o . '[preview]',
+				'is_option' => false,
 			),
 			array(
 				'title'   => __( 'Position', 'bundletiers' ),
@@ -80,13 +86,8 @@ class Settings_Page extends \WC_Settings_Page {
 				'id'      => $o . '[position]',
 			),
 			array(
-				'title'   => __( 'Style', 'bundletiers' ),
-				'type'    => 'select',
+				'type'    => 'bundletiers_style',
 				'default' => 'cards',
-				'options' => array(
-					'cards' => __( 'Cards', 'bundletiers' ),
-					'list'  => __( 'List', 'bundletiers' ),
-				),
 				'id'      => $o . '[style]',
 			),
 			array(
@@ -110,6 +111,14 @@ class Settings_Page extends \WC_Settings_Page {
 				'css'      => 'width:6em;',
 				'desc_tip' => __( 'Border of the selected card and the badge.', 'bundletiers' ),
 				'id'       => $o . '[style_accent]',
+			),
+			array(
+				'title'    => __( 'Text color', 'bundletiers' ),
+				'type'     => 'color',
+				'default'  => '',
+				'css'      => 'width:6em;',
+				'desc_tip' => __( 'Text on the cards. Leave empty to use the color of your theme.', 'bundletiers' ),
+				'id'       => $o . '[style_text]',
 			),
 			array(
 				'title'             => __( 'Border width (px)', 'bundletiers' ),

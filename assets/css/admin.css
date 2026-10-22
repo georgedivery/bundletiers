@@ -1,15 +1,47 @@
-.bt-editor .bt-tiers { max-width: 900px; }
+.bt-editor { container-type: inline-size; }
+.bt-editor .bt-tiers { width: 100%; max-width: 900px; table-layout: fixed; }
+.bt-editor .bt-tiers th.bt-col-default { width: 56px; }
+.bt-editor .bt-tiers th.bt-col-qty { width: 12%; }
+.bt-editor .bt-tiers th.bt-col-type { width: 22%; }
+.bt-editor .bt-tiers th.bt-col-value { width: 13%; }
+.bt-editor .bt-tiers th.bt-col-label,
+.bt-editor .bt-tiers th.bt-col-badge { width: 21%; }
+.bt-editor .bt-tiers th.bt-col-remove { width: 44px; }
 .bt-editor .bt-tiers th,
 .bt-editor .bt-tiers td { padding: 6px 8px; vertical-align: middle; }
 .bt-editor .bt-tiers input[type="text"],
 .bt-editor .bt-tiers input[type="number"],
 .bt-editor .bt-tiers select { width: 100%; max-width: none; float: none; margin: 0; }
 .bt-editor .bt-col-default,
-.bt-editor .bt-col-remove { width: 48px; text-align: center; }
-.bt-editor .bt-col-qty { width: 70px; }
-.bt-editor .bt-col-value { width: 90px; }
+.bt-editor .bt-col-remove { text-align: center; }
 .bt-editor .bt-remove { color: #b32d2e; font-size: 20px; line-height: 1; cursor: pointer; text-decoration: none; }
 .bt-editor .bt-actions { margin-top: 10px; }
 .bt-editor .bt-actions .description { margin-left: 8px; }
 .bt-product-editor { padding: 9px 12px; }
 .bt-product-editor .bt-tiers input[type="radio"] { float: none; margin: 0; }
+.bt-preview { max-width: 640px; }
+.bt-preview .bt-presets { margin: 0 0 12px; }
+.bt-preview .bt-preset.is-active { border-color: #2271b1; background: #f0f6fc; color: #0a4b78; }
+.bt-preview .bt-preview-box { padding: 22px 18px 10px; background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 4px; }
+.bt-preview .bt-selector { margin: 0 0 12px; }
+
+/* When the editor is narrow (a small window, or the product panel) each tier becomes a block. */
+@container (max-width: 700px) {
+	.bt-editor .bt-tiers,
+	.bt-editor .bt-tiers tbody { display: block; width: 100%; }
+	.bt-editor .bt-tiers thead { display: none; }
+	.bt-editor .bt-tiers tr.bt-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px 12px;
+		position: relative;
+		padding: 12px 36px 12px 12px;
+		border-bottom: 1px solid #dcdcde;
+	}
+	.bt-editor .bt-tiers td { display: block; width: auto; padding: 0; text-align: left; }
+	.bt-editor .bt-tiers td::before { content: attr(data-label); display: block; margin: 0 0 3px; font-size: 12px; color: #50575e; }
+	.bt-editor .bt-tiers td.bt-col-remove::before { content: none; }
+	.bt-editor .bt-tiers td.bt-col-remove { position: absolute; top: 8px; right: 8px; }
+	.bt-editor .bt-tiers td.bt-col-default { display: flex; align-items: center; gap: 8px; }
+	.bt-editor .bt-tiers td.bt-col-default::before { display: inline; margin: 0; order: 2; font-size: 13px; }
+}
