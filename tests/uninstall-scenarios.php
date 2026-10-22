@@ -44,6 +44,11 @@ function bt_restore_backup( $file ) {
 		foreach ( $data['meta'] as $row ) {
 			add_post_meta( (int) $row['post_id'], $row['meta_key'], maybe_unserialize( $row['meta_value'] ) );
 		}
+		if ( null === ( $data['intro'] ?? null ) ) {
+			delete_option( 'bundletiers_intro_dismissed' );
+		} else {
+			update_option( 'bundletiers_intro_dismissed', $data['intro'], false );
+		}
 		if ( null === $data['option'] ) {
 			delete_option( Settings::OPTION );
 		} else {
@@ -58,7 +63,7 @@ bt_restore_backup( $backup );
 
 $saved = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ($marks)", $keys ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 $raw    = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", Settings::OPTION ) );
-file_put_contents( $backup, wp_json_encode( array( 'meta' => $saved, 'option' => $raw ) ) );
+file_put_contents( $backup, wp_json_encode( array( 'meta' => $saved, 'option' => $raw, 'intro' => get_option( 'bundletiers_intro_dismissed', null ) ) ) );
 $product = null;
 
 function bt_uninstall() {
@@ -85,7 +90,9 @@ try {
 
 	// Switched on: option and meta go.
 	update_option( Settings::OPTION, array( 'delete_data' => 'yes' ) );
+	update_option( 'bundletiers_intro_dismissed', 'yes', false );
 	bt_uninstall();
+	bt_check( 'delete_data on: the hidden first-run steps are forgotten too', get_option( 'bundletiers_intro_dismissed', false ), false );
 	bt_check( 'delete_data on: the option is removed', get_option( Settings::OPTION, false ), false );
 	bt_check( 'delete_data on: the product meta is removed', get_post_meta( $product->get_id(), '_bundletiers_enabled', true ), '' );
 	bt_check( 'delete_data on: no BundleTiers meta is left', (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key IN ($marks)", $keys ) ), 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

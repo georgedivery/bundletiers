@@ -326,3 +326,187 @@ msgstr "Цвят на текста"
 #: includes/class-settings-page.php
 msgid "Text on the cards. Leave empty to use the color of your theme."
 msgstr "Текст върху картите. Оставете празно, за да се ползва цветът на темата."
+
+#: includes/class-settings-page.php
+msgid "General"
+msgstr "Общи"
+
+#: includes/class-settings-page.php
+msgid "Behavior"
+msgstr "Поведение"
+
+#: includes/class-settings-page.php
+msgid "Texts"
+msgstr "Текстове"
+
+#: includes/class-settings-page.php
+msgid "Status"
+msgstr "Състояние"
+
+#: includes/class-settings-page.php
+msgid "Start in three steps"
+msgstr "Започнете в три стъпки"
+
+#: includes/class-settings-page.php
+msgid "Set your default tiers below (1, 2 and 3 items work for most shops)."
+msgstr "Задайте нивата по подразбиране по-долу (1, 2 и 3 броя вършат работа в повечето магазини)."
+
+#: includes/class-settings-page.php
+msgid "Open a %1$sproduct%2$s, go to Product data, BundleTiers, and tick \"Enable bundles\"."
+msgstr "Отворете %1$sпродукт%2$s, отидете в Product data, BundleTiers и отметнете \"Enable bundles\"."
+
+#: includes/class-settings-page.php
+msgid "Look at the product page: the cards are there. Style them in the Appearance section."
+msgstr "Погледнете страницата на продукта: картите са там. Стилизирайте ги в раздел Външен вид."
+
+#: includes/class-settings-page.php
+msgid "Hide this"
+msgstr "Скрий това"
+
+#: includes/class-settings-page.php
+msgid "Go to products"
+msgstr "Към продуктите"
+
+#: includes/class-settings-page.php
+msgid "%1$d of %2$d products use bundles."
+msgstr "%1$d от %2$d продукта ползват пакети."
+
+#: includes/class-settings-page.php
+msgid "No product uses bundles yet. Open a product, go to Product data, BundleTiers, and tick \"Enable bundles\"."
+msgstr "Още няма продукт с пакети. Отворете продукт, отидете в Product data, BundleTiers и отметнете \"Enable bundles\"."
+
+#: includes/class-settings-page.php
+msgid "In the cart"
+msgstr "В количката"
+
+#: includes/class-settings-page.php
+msgid "How the quantities are counted and how coupons treat bundles."
+msgstr "Как се броят количествата и как купоните третират пакетите."
+
+#: includes/class-settings-page.php
+msgid "Leave a text empty to use the one in the language of your site."
+msgstr "Оставете текста празен, за да се ползва този на езика на сайта."
+
+#: includes/class-settings-page.php
+msgid "What BundleTiers found on this site. Nothing here is sent anywhere; copy it when you ask for support."
+msgstr "Какво е намерил BundleTiers на този сайт. Нищо от това не се изпраща никъде; копирайте го, когато искате помощ."
+
+#: includes/class-settings-page.php
+msgid "Needs %s or later"
+msgstr "Изисква %s или по-нова"
+
+#: includes/class-settings-page.php
+msgid "Supported"
+msgstr "Поддържа се"
+
+#: includes/class-settings-page.php
+msgid "PHP"
+msgstr "PHP"
+
+#: includes/class-settings-page.php
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: includes/class-settings-page.php
+msgid "WordPress"
+msgstr "WordPress"
+
+#: includes/class-settings-page.php
+msgid "Active theme"
+msgstr "Активна тема"
+
+#: includes/class-settings-page.php
+msgid "Block theme"
+msgstr "Блокова тема"
+
+#: includes/class-settings-page.php
+msgid "Classic theme"
+msgstr "Класическа тема"
+
+#: includes/class-settings-page.php
+msgid "Cart page"
+msgstr "Страница на количката"
+
+#: includes/class-settings-page.php
+msgid "Checkout page"
+msgstr "Страница на поръчката"
+
+#: includes/class-settings-page.php
+msgid "blocks"
+msgstr "блокове"
+
+#: includes/class-settings-page.php
+msgid "shortcode"
+msgstr "shortcode"
+
+#: includes/class-settings-page.php
+msgid "not set"
+msgstr "не е зададена"
+
+#: includes/class-settings-page.php
+msgid "Both the shortcode and the blocks work"
+msgstr "Работят и shortcode, и блоковете"
+
+#: includes/class-settings-page.php
+msgid "Order storage"
+msgstr "Съхранение на поръчките"
+
+#: includes/class-settings-page.php
+msgid "High-performance order storage (HPOS)"
+msgstr "Високопроизводително съхранение (HPOS)"
+
+#: includes/class-settings-page.php
+msgid "WordPress posts"
+msgstr "Публикации на WordPress"
+
+#: includes/class-settings-page.php
+msgid "Prices and tax"
+msgstr "Цени и данъци"
+
+#: includes/class-settings-page.php
+msgid "Taxes are off in WooCommerce, so prices have no tax."
+msgstr "Данъците са изключени в WooCommerce, затова цените са без данък."
+
+#: includes/class-settings-page.php
+msgid "Prices are entered with tax and shown with tax."
+msgstr "Цените се въвеждат с данък и се показват с данък."
+
+#: includes/class-settings-page.php
+msgid "Prices are entered with tax and shown without tax."
+msgstr "Цените се въвеждат с данък и се показват без данък."
+
+#: includes/class-settings-page.php
+msgid "Prices are entered without tax and shown with tax."
+msgstr "Цените се въвеждат без данък и се показват с данък."
+
+#: includes/class-settings-page.php
+msgid "Prices are entered without tax and shown without tax."
+msgstr "Цените се въвеждат без данък и се показват без данък."
+
+#: includes/class-settings-page.php
+msgid "Bundle amounts follow the price shown in the shop"
+msgstr "Сумите на пакетите следват цената, показана в магазина"
+
+#: includes/class-settings-page.php
+msgid "Products with bundles"
+msgstr "Продукти с пакети"
+
+#: includes/class-settings-page.php
+msgid "%1$d of %2$d"
+msgstr "%1$d от %2$d"
+
+#: includes/class-settings-page.php
+msgid "None yet: switch bundles on in a product"
+msgstr "Още няма: включете пакети в продукт"
+
+#: includes/class-settings-page.php
+msgid "Where the cards sit next to the add to cart button."
+msgstr "Къде са картите спрямо бутона за добавяне в количката."
+
+#: includes/class-settings-page.php
+msgid "Background of every card."
+msgstr "Фон на всяка карта."
+
+#: includes/class-settings-page.php
+msgid "Border of the cards that are not selected."
+msgstr "Рамка на картите, които не са избрани."

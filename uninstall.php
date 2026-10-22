@@ -21,6 +21,7 @@ if ( ! function_exists( 'bundletiers_uninstall_site' ) ) {
 
 		if ( is_array( $bundletiers_settings ) && isset( $bundletiers_settings['delete_data'] ) && 'yes' === $bundletiers_settings['delete_data'] ) {
 			delete_option( 'bundletiers_settings' );
+			delete_option( 'bundletiers_intro_dismissed' );
 
 			delete_post_meta_by_key( '_bundletiers_enabled' );
 			delete_post_meta_by_key( '_bundletiers_mode' );

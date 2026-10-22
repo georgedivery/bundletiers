@@ -19,6 +19,11 @@ class Settings {
 	const OPTION = 'bundletiers_settings';
 
 	/**
+	 * Option that remembers the first-run steps were hidden.
+	 */
+	const INTRO_OPTION = 'bundletiers_intro_dismissed';
+
+	/**
 	 * Registers the settings hooks.
 	 */
 	public function __construct() {
@@ -26,6 +31,10 @@ class Settings {
 		add_action( 'woocommerce_admin_field_bundletiers_tiers', array( $this, 'output_tiers_field' ) );
 		add_action( 'woocommerce_admin_field_bundletiers_preview', array( $this, 'output_preview_field' ) );
 		add_action( 'woocommerce_admin_field_bundletiers_style', array( $this, 'output_style_field' ) );
+		add_action( 'woocommerce_admin_field_bundletiers_intro', array( $this, 'output_intro_field' ) );
+		add_action( 'woocommerce_admin_field_bundletiers_products_notice', array( $this, 'output_products_notice' ) );
+		add_action( 'woocommerce_admin_field_bundletiers_status', array( $this, 'output_status_field' ) );
+		add_action( 'admin_post_bundletiers_dismiss_intro', array( $this, 'dismiss_intro' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option_' . self::OPTION, array( $this, 'sanitize_option' ), 10, 3 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
@@ -165,22 +174,47 @@ class Settings {
 	}
 
 	/**
+	 * Black or white text, whichever reads better on a color (WCAG contrast of the two).
+	 *
+	 * @param string $color Hex color.
+	 * @return string #ffffff or #111111.
+	 */
+	public static function contrast_color( $color ) {
+		$hex = ltrim( (string) sanitize_hex_color( is_string( $color ) ? trim( $color ) : '' ), '#' );
+		if ( '' === $hex ) {
+			return '#ffffff';
+		}
+		if ( 3 === strlen( $hex ) ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+		$lum = 0.0;
+		foreach ( array( 0.2126, 0.7152, 0.0722 ) as $i => $weight ) {
+			$c    = hexdec( substr( $hex, $i * 2, 2 ) ) / 255;
+			$lum += $weight * ( $c <= 0.03928 ? $c / 12.92 : pow( ( $c + 0.055 ) / 1.055, 2.4 ) );
+		}
+		// Contrast with white against contrast with #111111 (luminance 0.0056).
+		return ( 1.05 / ( $lum + 0.05 ) ) >= ( ( $lum + 0.05 ) / 0.0556 ) ? '#ffffff' : '#111111';
+	}
+
+	/**
 	 * CSS variables for the card look, printed after the plugin stylesheet.
 	 *
 	 * @return string
 	 */
 	public static function style_css() {
-		$bg   = self::clean_style( 'style_bg', self::get( 'style_bg' ) );
-		$text = self::clean_style( 'style_text', self::get( 'style_text' ) );
+		$bg     = self::clean_style( 'style_bg', self::get( 'style_bg' ) );
+		$accent = self::clean_style( 'style_accent', self::get( 'style_accent' ) );
+		$text   = self::clean_style( 'style_text', self::get( 'style_text' ) );
 		// With a text color set, the softer lines (old price, per item) are that color faded into the card.
 		$text_css = $text ? sprintf( '--bt-text:%1$s;--bt-muted:color-mix(in srgb,%1$s 62%%,%2$s);', $text, $bg ) : '';
 		return sprintf(
-			'.bt-selector{--bt-bg:%1$s;--bt-border:%2$s;--bt-accent:%3$s;--bt-border-width:%4$dpx;--bt-radius:%5$dpx;%6$s}',
+			'.bt-selector{--bt-bg:%1$s;--bt-border:%2$s;--bt-accent:%3$s;--bt-border-width:%4$dpx;--bt-radius:%5$dpx;--bt-on-accent:%6$s;%7$s}',
 			$bg,
 			self::clean_style( 'style_border_color', self::get( 'style_border_color' ) ),
-			self::clean_style( 'style_accent', self::get( 'style_accent' ) ),
+			$accent,
 			self::clean_style( 'style_border_width', self::get( 'style_border_width' ) ),
 			self::clean_style( 'style_radius', self::get( 'style_radius' ) ),
+			self::contrast_color( $accent ),
 			$text_css
 		);
 	}
@@ -205,6 +239,88 @@ class Settings {
 		echo '<tr valign="top"><th scope="row" class="titledesc"><label>' . esc_html( $field['title'] ) . '</label></th><td class="forminp">';
 		Tiers_Editor::render( $field['id'], self::get( 'tiers' ) );
 		echo '</td></tr>';
+	}
+
+	/**
+	 * The three steps to start, shown until they are hidden.
+	 */
+	public function output_intro_field() {
+		if ( 'yes' === get_option( self::INTRO_OPTION ) ) {
+			return;
+		}
+		$hide = wp_nonce_url( admin_url( 'admin-post.php?action=bundletiers_dismiss_intro' ), 'bundletiers_dismiss_intro' );
+		echo '<tr valign="top"><td colspan="2" class="bt-intro-cell"><div class="bt-intro"><h3>' . esc_html__( 'Start in three steps', 'bundletiers' ) . '</h3><ol>';
+		echo '<li>' . esc_html__( 'Set your default tiers below (1, 2 and 3 items work for most shops).', 'bundletiers' ) . '</li>';
+		echo '<li>' . wp_kses(
+			sprintf(
+				/* translators: 1: opening link to the products, 2: closing link */
+				__( 'Open a %1$sproduct%2$s, go to Product data, BundleTiers, and tick "Enable bundles".', 'bundletiers' ),
+				'<a href="' . esc_url( admin_url( 'edit.php?post_type=product' ) ) . '">',
+				'</a>'
+			),
+			array( 'a' => array( 'href' => array() ) )
+		) . '</li>';
+		echo '<li>' . esc_html__( 'Look at the product page: the cards are there. Style them in the Appearance section.', 'bundletiers' ) . '</li>';
+		echo '</ol><p><a href="' . esc_url( $hide ) . '">' . esc_html__( 'Hide this', 'bundletiers' ) . '</a></p></div></td></tr>';
+	}
+
+	/**
+	 * Hides the first-run steps for good (the link has a nonce).
+	 *
+	 * @return bool Whether the steps were hidden.
+	 */
+	public function do_dismiss_intro() {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_admin_referer( 'bundletiers_dismiss_intro' ) ) {
+			return false;
+		}
+		update_option( self::INTRO_OPTION, 'yes', false );
+		return true;
+	}
+
+	/**
+	 * Handler of the "Hide this" link: hides the steps and goes back to the settings.
+	 */
+	public function dismiss_intro() {
+		$this->do_dismiss_intro();
+		wp_safe_redirect( admin_url( 'admin.php?page=wc-settings&tab=bundletiers' ) );
+		exit;
+	}
+
+	/**
+	 * Says how many products use bundles, or invites to start when none does.
+	 */
+	public function output_products_notice() {
+		$products = Status::bundle_products();
+		$link     = '<a href="' . esc_url( admin_url( 'edit.php?post_type=product' ) ) . '">' . esc_html__( 'Go to products', 'bundletiers' ) . '</a>';
+		echo '<tr valign="top"><td colspan="2" class="bt-notice-cell"><div class="bt-notice">';
+		if ( $products['with'] > 0 ) {
+			echo esc_html(
+				sprintf(
+					/* translators: 1: products with bundles, 2: all products */
+					__( '%1$d of %2$d products use bundles.', 'bundletiers' ),
+					$products['with'],
+					$products['total']
+				)
+			) . ' ' . wp_kses( $link, array( 'a' => array( 'href' => array() ) ) );
+		} else {
+			echo esc_html__( 'No product uses bundles yet. Open a product, go to Product data, BundleTiers, and tick "Enable bundles".', 'bundletiers' ) . ' ' . wp_kses( $link, array( 'a' => array( 'href' => array() ) ) );
+		}
+		echo '</div></td></tr>';
+	}
+
+	/**
+	 * The Status table.
+	 */
+	public function output_status_field() {
+		echo '<tr valign="top"><td colspan="2" class="bt-status-cell"><table class="widefat striped bt-status"><tbody>';
+		foreach ( Status::rows() as $row ) {
+			echo '<tr><th scope="row">' . esc_html( $row['label'] ) . '</th><td>' . esc_html( $row['value'] );
+			if ( '' !== $row['note'] ) {
+				echo ' <span class="bt-pill bt-pill-' . esc_attr( $row['state'] ? $row['state'] : 'info' ) . '">' . esc_html( $row['note'] ) . '</span>';
+			}
+			echo '</td></tr>';
+		}
+		echo '</tbody></table></td></tr>';
 	}
 
 	/**
@@ -321,7 +437,8 @@ class Settings {
 		}
 		wp_enqueue_style( 'bundletiers-admin', BUNDLETIERS_URL . 'assets/css/admin.css', array(), Plugin::asset_version( 'assets/css/admin.css' ) );
 		wp_enqueue_script( 'bundletiers-admin', BUNDLETIERS_URL . 'assets/js/admin.js', array(), Plugin::asset_version( 'assets/js/admin.js' ), true );
-		if ( $on_settings ) {
+		$on_appearance = $on_settings && isset( $_GET['section'] ) && 'appearance' === sanitize_key( wp_unslash( $_GET['section'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $on_appearance ) {
 			// The preview is the real selector markup and stylesheet.
 			wp_enqueue_style( 'bundletiers', BUNDLETIERS_URL . 'assets/css/frontend.css', array(), Plugin::asset_version( 'assets/css/frontend.css' ) );
 			wp_enqueue_script( 'bundletiers-admin-preview', BUNDLETIERS_URL . 'assets/js/admin-preview.js', array( 'jquery' ), Plugin::asset_version( 'assets/js/admin-preview.js' ), true );

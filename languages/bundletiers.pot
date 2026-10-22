@@ -310,3 +310,187 @@ msgstr ""
 #: includes/class-settings-page.php
 msgid "Text on the cards. Leave empty to use the color of your theme."
 msgstr ""
+
+#: includes/class-settings-page.php
+msgid "General"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Behavior"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Texts"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Status"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Start in three steps"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Set your default tiers below (1, 2 and 3 items work for most shops)."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Open a %1$sproduct%2$s, go to Product data, BundleTiers, and tick \"Enable bundles\"."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Look at the product page: the cards are there. Style them in the Appearance section."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Hide this"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Go to products"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "%1$d of %2$d products use bundles."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "No product uses bundles yet. Open a product, go to Product data, BundleTiers, and tick \"Enable bundles\"."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "In the cart"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "How the quantities are counted and how coupons treat bundles."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Leave a text empty to use the one in the language of your site."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "What BundleTiers found on this site. Nothing here is sent anywhere; copy it when you ask for support."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Needs %s or later"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Supported"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "PHP"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "WooCommerce"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "WordPress"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Active theme"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Block theme"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Classic theme"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Cart page"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Checkout page"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "blocks"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "shortcode"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "not set"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Both the shortcode and the blocks work"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Order storage"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "High-performance order storage (HPOS)"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "WordPress posts"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Prices and tax"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Taxes are off in WooCommerce, so prices have no tax."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Prices are entered with tax and shown with tax."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Prices are entered with tax and shown without tax."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Prices are entered without tax and shown with tax."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Prices are entered without tax and shown without tax."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Bundle amounts follow the price shown in the shop"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Products with bundles"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "%1$d of %2$d"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "None yet: switch bundles on in a product"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Where the cards sit next to the add to cart button."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Background of every card."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Border of the cards that are not selected."
+msgstr ""

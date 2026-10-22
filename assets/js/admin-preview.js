@@ -9,6 +9,22 @@
 		}
 	}
 
+	// Black or white text, whichever reads better on a color (same rule as Settings::contrast_color()).
+	function contrast( color ) {
+		var hex = String( color ).replace( '#', '' );
+		var lum = 0;
+		if ( 3 === hex.length ) {
+			hex = hex.charAt( 0 ) + hex.charAt( 0 ) + hex.charAt( 1 ) + hex.charAt( 1 ) + hex.charAt( 2 ) + hex.charAt( 2 );
+		}
+		[ 0.2126, 0.7152, 0.0722 ].forEach( function ( weight, i ) {
+			var c = parseInt( hex.substr( i * 2, 2 ), 16 ) / 255;
+			lum += weight * ( c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 ) );
+		} );
+		return 1.05 / ( lum + 0.05 ) >= ( lum + 0.05 ) / 0.0556 ? '#ffffff' : '#111111';
+	}
+
+	window.BundleTiersPreview = { contrast: contrast };
+
 	ready( function () {
 		var root = document.querySelector( '.bt-preview' );
 		var selector = root ? root.querySelector( '.bt-selector' ) : null;
@@ -78,6 +94,9 @@
 			} else {
 				selector.style.removeProperty( '--bt-text' );
 				selector.style.removeProperty( '--bt-muted' );
+			}
+			if ( hex.test( value( 'style_accent' ) ) ) {
+				selector.style.setProperty( '--bt-on-accent', contrast( value( 'style_accent' ) ) );
 			}
 			selector.style.setProperty( '--bt-border-width', whole( value( 'style_border_width' ), 0, 10, 1 ) + 'px' );
 			selector.style.setProperty( '--bt-radius', whole( value( 'style_radius' ), 0, 40, 4 ) + 'px' );

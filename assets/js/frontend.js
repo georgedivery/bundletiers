@@ -213,8 +213,15 @@
 
 	Selector.prototype.announce = function () {
 		var cur = this.currentResult();
+		var checked = this.el.querySelector( '.bt-radio:checked' );
+		var name = checked && checked.closest( '.bt-option' ) ? checked.closest( '.bt-option' ).querySelector( '.bt-label' ) : null;
+		var text;
 		if ( cur && this.live ) {
-			this.live.textContent = cur.qty + ' — ' + formatMoney( cur.result.total );
+			text = ( name ? name.textContent.trim() : cur.qty ) + ' — ' + formatMoney( cur.result.total );
+			if ( cur.result.saved > 0 ) {
+				text += ', ' + ( cfg.textSave || '' ) + ' ' + formatMoney( cur.result.saved );
+			}
+			this.live.textContent = text;
 		}
 	};
 

@@ -4,14 +4,18 @@
 	--bt-border-width: 1px;
 	--bt-bg: #fff;
 	--bt-text: inherit;
-	--bt-muted: #6b7280;
+	--bt-muted: #596070;
 	--bt-radius: 4px;
 	--bt-gap: 8px;
+	--bt-on-accent: #fff;
 	border: 0;
 	margin: 0 0 1em;
 	padding: 0;
 	min-width: 0;
+	width: 100%;
+	box-sizing: border-box;
 	color: var(--bt-text);
+	container-type: inline-size;
 }
 
 /* Below the add to cart button the cards need air above them. */
@@ -76,7 +80,7 @@
 	transform: translateY(-50%);
 	padding: 2px 8px;
 	background: var(--bt-accent);
-	color: #fff;
+	color: var(--bt-on-accent);
 	font-size: .75em;
 	line-height: 1.4;
 	border-radius: 2px;
@@ -180,3 +184,50 @@
 .bt-selector.bt-style-list .bt-badge { left: auto; right: 14px; transform: translateY(-50%); }
 
 /* Minimal: the plain bordered card (the base rules above), nothing added. */
+
+/* Narrow places (a side column, a small phone): one tier per row, whatever the style. */
+@container (max-width: 460px) {
+	.bt-selector.bt-style-cards .bt-options,
+	.bt-selector.bt-style-minimal .bt-options { display: flex; flex-direction: column; gap: 10px; }
+
+	.bt-selector.bt-style-cards .bt-card,
+	.bt-selector.bt-style-minimal .bt-card {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		column-gap: 12px;
+		row-gap: 2px;
+		padding: 12px 14px;
+		min-height: 0;
+	}
+	.bt-selector.bt-style-cards .bt-card { grid-template-columns: auto 1fr auto; }
+	.bt-selector.bt-style-cards .bt-option.has-badge .bt-card,
+	.bt-selector.bt-style-minimal .bt-option.has-badge .bt-card { padding-top: 12px; }
+
+	.bt-selector.bt-style-cards .bt-card::before { grid-column: 1; grid-row: 1 / span 3; margin: 0; width: 20px; height: 20px; }
+	.bt-selector.bt-style-cards .bt-label { grid-column: 2; grid-row: 1; }
+	.bt-selector.bt-style-cards .bt-unit { grid-column: 2; grid-row: 2; }
+	.bt-selector.bt-style-cards .bt-save { grid-column: 2; grid-row: 3; justify-self: start; }
+	.bt-selector.bt-style-cards .bt-total { grid-column: 3; grid-row: 1; text-align: right; font-size: 1.15em; }
+	.bt-selector.bt-style-cards .bt-full { grid-column: 3; grid-row: 2; text-align: right; }
+	.bt-selector.bt-style-cards .bt-badge { left: auto; right: 14px; transform: translateY(-50%); }
+
+	.bt-selector.bt-style-minimal .bt-label { grid-column: 1; grid-row: 1; }
+	.bt-selector.bt-style-minimal .bt-unit,
+	.bt-selector.bt-style-minimal .bt-save { grid-column: 1; }
+	.bt-selector.bt-style-minimal .bt-total { grid-column: 2; grid-row: 1; text-align: right; }
+	.bt-selector.bt-style-minimal .bt-full { grid-column: 2; grid-row: 2; text-align: right; }
+	.bt-selector.bt-style-minimal .bt-badge { left: auto; right: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bt-selector .bt-card { transition: none !important; transform: none !important; }
+}
+
+/* Windows high-contrast mode drops colors: keep the selected tier unmistakable. */
+@media (forced-colors: active) {
+	.bt-selector .bt-card { border: 1px solid CanvasText; }
+	.bt-selector .bt-radio:checked + .bt-card { outline: 3px solid Highlight; outline-offset: 1px; }
+	.bt-selector .bt-radio:focus-visible + .bt-card { outline: 3px solid Highlight; outline-offset: 3px; }
+	.bt-selector .bt-badge { border: 1px solid CanvasText; }
+}

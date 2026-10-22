@@ -38,6 +38,18 @@ cases.forEach(([base, qty, type, value, dec, exp]) => {
 const f = window.BundleTiers.formatMoney;
 const fmt = [[2551,'25.51 €'],[0,'0.00 €'],[5,'0.05 €'],[123456789,'1,234,567.89 €']];
 fmt.forEach(([m, e]) => { if (f(m) !== e) { bad++; console.log('FMT', m, f(m), e); } });
+// The admin preview picks the same text color on an accent as Settings::contrast_color() (PHP side expected values below).
+const previewSrc = fs.readFileSync(process.argv[3], 'utf8');
+{
+  const doc = { readyState: 'loading', addEventListener() {}, querySelector() { return null; } };
+  const win = { jQuery: undefined };
+  new Function('window', 'document', previewSrc)(win, doc);
+  const expected = JSON.parse(process.argv[4]);
+  Object.keys(expected).forEach((color) => {
+    const got = win.BundleTiersPreview.contrast(color);
+    if (got !== expected[color]) { bad++; console.log('CONTRAST', color, got, expected[color]); }
+  });
+}
 // Start-up: right away when the page is already loaded, on DOMContentLoaded otherwise; decimals may be a string.
 const src = fs.readFileSync(process.argv[2], 'utf8');
 function load(readyState, decimals) {
@@ -59,7 +71,21 @@ JS;
 
 $tmp = tempnam( sys_get_temp_dir(), 'btjs' );
 file_put_contents( $tmp, $js );
-$proc = proc_open( array( 'node', $tmp, __DIR__ . '/../assets/js/frontend.js' ), array( 0 => array( 'pipe', 'r' ), 1 => STDOUT, 2 => STDERR ), $pipes );
+// What Settings::contrast_color() answers for these colors (checked in tests/settings-scenarios.php).
+$on_accent = array(
+	'#111111' => '#ffffff',
+	'#ffffff' => '#111111',
+	'#cf3450' => '#ffffff',
+	'#4f46e5' => '#ffffff',
+	'#0f6e56' => '#ffffff',
+	'#facc15' => '#111111',
+	'#fff'    => '#111111',
+	'#000'    => '#ffffff',
+	'#e2e4ea' => '#111111',
+	'#818cf8' => '#111111',
+	'#f59e0b' => '#111111',
+);
+$proc = proc_open( array( 'node', $tmp, __DIR__ . '/../assets/js/frontend.js', __DIR__ . '/../assets/js/admin-preview.js', json_encode( $on_accent ) ), array( 0 => array( 'pipe', 'r' ), 1 => STDOUT, 2 => STDERR ), $pipes );
 fwrite( $pipes[0], json_encode( $cases ) );
 fclose( $pipes[0] );
 $code = proc_close( $proc );

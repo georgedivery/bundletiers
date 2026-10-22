@@ -40,6 +40,14 @@ try {
 	bt_check( 'radius too big', Settings::clean_style( 'style_radius', '500' ), 40 );
 	bt_check( 'radius rounds', Settings::clean_style( 'style_radius', '7.6' ), 8 );
 
+	// Text on the accent color (badge, selected dot): black or white, whichever reads better.
+	foreach ( array( '#111111' => '#ffffff', '#ffffff' => '#111111', '#4f46e5' => '#ffffff', '#cf3450' => '#ffffff', '#facc15' => '#111111', '#818cf8' => '#111111', '#fff' => '#111111', '#000' => '#ffffff', 'zzz' => '#ffffff' ) as $accent => $on ) {
+		bt_check( "text on $accent is $on", Settings::contrast_color( $accent ), $on );
+	}
+	update_option( Settings::OPTION, array( 'style_accent' => '#facc15' ) );
+	bt_check( 'a light accent gets dark text on the badge', false !== strpos( Settings::style_css(), '--bt-on-accent:#111111;' ), true );
+	delete_option( Settings::OPTION );
+
 	// Text color: a hex color, or empty to keep the theme's.
 	bt_check( 'text color ok', Settings::clean_style( 'style_text', '#FFFFFF' ), '#FFFFFF' );
 	bt_check( 'bad text color -> empty (theme color)', Settings::clean_style( 'style_text', 'white' ), '' );
@@ -51,18 +59,27 @@ try {
 
 	// CSS output with defaults and with saved values.
 	delete_option( Settings::OPTION );
-	bt_check( 'defaults css', Settings::style_css(), '.bt-selector{--bt-bg:#ffffff;--bt-border:#d5d7dd;--bt-accent:#111111;--bt-border-width:1px;--bt-radius:4px;}' );
+	bt_check( 'defaults css', Settings::style_css(), '.bt-selector{--bt-bg:#ffffff;--bt-border:#d5d7dd;--bt-accent:#111111;--bt-border-width:1px;--bt-radius:4px;--bt-on-accent:#ffffff;}' );
 	update_option( Settings::OPTION, array( 'style_bg' => '#fafafa', 'style_border_color' => '#000000', 'style_accent' => '#cf3450', 'style_border_width' => 2, 'style_radius' => 0 ) );
-	bt_check( 'saved css', Settings::style_css(), '.bt-selector{--bt-bg:#fafafa;--bt-border:#000000;--bt-accent:#cf3450;--bt-border-width:2px;--bt-radius:0px;}' );
+	bt_check( 'saved css', Settings::style_css(), '.bt-selector{--bt-bg:#fafafa;--bt-border:#000000;--bt-accent:#cf3450;--bt-border-width:2px;--bt-radius:0px;--bt-on-accent:#ffffff;}' );
 	update_option( Settings::OPTION, array( 'style_bg' => 'javascript:x', 'style_radius' => '1000' ) );
-	bt_check( 'tampered option is cleaned on output', Settings::style_css(), '.bt-selector{--bt-bg:#ffffff;--bt-border:#d5d7dd;--bt-accent:#111111;--bt-border-width:1px;--bt-radius:40px;}' );
+	bt_check( 'tampered option is cleaned on output', Settings::style_css(), '.bt-selector{--bt-bg:#ffffff;--bt-border:#d5d7dd;--bt-accent:#111111;--bt-border-width:1px;--bt-radius:40px;--bt-on-accent:#ffffff;}' );
 
 	// Saving through the real WooCommerce settings screen code path.
 	delete_option( Settings::OPTION );
 	require_once WP_PLUGIN_DIR . '/woocommerce/includes/admin/class-wc-admin-settings.php';
 	new Settings(); // Registers the save filter (normally loaded only in wp-admin).
 	$page   = new BundleTiers\Settings_Page();
-	$fields = $page->get_settings_for_section( '' );
+	$fields   = array();
+	$by_field = array();
+	foreach ( array_keys( $page->get_sections() ) as $section ) {
+		foreach ( $page->get_settings_for_section( $section ) as $field ) {
+			$fields[] = $field;
+			if ( isset( $field['id'] ) && ! in_array( $field['type'], array( 'title', 'sectionend' ), true ) ) {
+				$by_field[ $field['id'] ][] = $section;
+			}
+		}
+	}
 	$ids    = wp_list_pluck( $fields, 'id' );
 	foreach ( array( 'style_bg', 'style_border_color', 'style_accent', 'style_border_width', 'style_radius' ) as $key ) {
 		bt_check( "field exists: $key", in_array( Settings::OPTION . '[' . $key . ']', $ids, true ), true );
@@ -102,6 +119,65 @@ try {
 	remove_filter( 'gettext', $translate, 10 );
 	delete_option( Settings::OPTION );
 	bt_check( 'asset version changes with the file', 0 === strpos( BundleTiers\Plugin::asset_version( 'assets/css/frontend.css' ), BUNDLETIERS_VERSION . '.' ), true );
+
+	// Five sections; every field lives in exactly one of them.
+	bt_check( 'five sections', array_keys( $page->get_sections() ), array( '', 'appearance', 'behavior', 'texts', 'status' ) );
+	bt_check( 'no field appears in two sections', count( array_filter( $by_field, static function ( $where ) {
+		return count( $where ) > 1;
+	} ) ), 0 );
+	$where = static function ( $key ) use ( $by_field ) {
+		return $by_field[ Settings::OPTION . '[' . $key . ']' ] ?? array();
+	};
+	bt_check( 'tiers are in General', $where( 'tiers' ), array( '' ) );
+	bt_check( 'colors and the preview are in Appearance', array( $where( 'style_bg' ), $where( 'style_text' ), $where( 'preview' ), $where( 'style' ), $where( 'position' ) ), array( array( 'appearance' ), array( 'appearance' ), array( 'appearance' ), array( 'appearance' ), array( 'appearance' ) ) );
+	bt_check( 'variations, coupons and data are in Behavior', array( $where( 'count_variations' ), $where( 'no_discount_coupon' ), $where( 'delete_data' ) ), array( array( 'behavior' ), array( 'behavior' ), array( 'behavior' ) ) );
+	bt_check( 'texts are in Texts', array( $where( 'text_save' ), $where( 'text_per_item' ), $where( 'text_cart_label' ) ), array( array( 'texts' ), array( 'texts' ), array( 'texts' ) ) );
+	bt_check( 'Status has no setting to save', array_values( array_filter( $page->get_settings_for_section( 'status' ), static function ( $f ) {
+		return ! empty( $f['id'] ) && false !== strpos( $f['id'], Settings::OPTION . '[' );
+	} ) ), array() );
+
+	// Status: facts from this site.
+	$rows = BundleTiers\Status::rows();
+	bt_check( 'status lists the plugin version first', $rows[0]['value'], BUNDLETIERS_VERSION );
+	bt_check( 'status rows all have a label, a value and a state', count( array_filter( $rows, static function ( $r ) {
+		return '' !== $r['label'] && '' !== (string) $r['value'] && isset( $r['state'] );
+	} ) ), count( $rows ) );
+	bt_check( 'WooCommerce is reported as supported', $rows[1]['state'], 'ok' );
+	$products = BundleTiers\Status::bundle_products();
+	bt_check( 'product counts are whole numbers', is_int( $products['with'] ) && is_int( $products['total'] ) && $products['with'] <= $products['total'], true );
+	bt_check( 'cart page kind is known', in_array( BundleTiers\Status::page_kind( 'cart' ), array( 'blocks', 'shortcode', 'missing' ), true ), true );
+	ob_start();
+	( new Settings() )->output_status_field();
+	$status_html = ob_get_clean();
+	bt_check( 'the Status table has a row per fact', substr_count( $status_html, '<th scope="row">' ), count( $rows ) );
+
+	// First-run steps and the products notice.
+	$settings_obj = new Settings();
+	delete_option( Settings::INTRO_OPTION );
+	ob_start();
+	$settings_obj->output_intro_field();
+	$intro = ob_get_clean();
+	bt_check( 'the three steps are shown at first', substr_count( $intro, '<li>' ), 3 );
+	bt_check( 'the steps have a hide link with a nonce', false !== strpos( $intro, 'bundletiers_dismiss_intro' ) && false !== strpos( $intro, '_wpnonce=' ), true );
+	wp_set_current_user( 0 );
+	bt_check( 'a visitor cannot hide the steps', $settings_obj->do_dismiss_intro(), false );
+	$admins = get_users( array( 'role' => 'administrator', 'number' => 1, 'fields' => 'ID' ) );
+	wp_set_current_user( (int) $admins[0] );
+	$_REQUEST['_wpnonce'] = wp_create_nonce( 'bundletiers_dismiss_intro' );
+	bt_check( 'an administrator with the nonce hides the steps', $settings_obj->do_dismiss_intro(), true );
+	unset( $_REQUEST['_wpnonce'] );
+	wp_set_current_user( 0 );
+	ob_start();
+	$settings_obj->output_intro_field();
+	bt_check( 'the steps stay hidden afterwards', ob_get_clean(), '' );
+	delete_option( Settings::INTRO_OPTION );
+	ob_start();
+	$settings_obj->output_products_notice();
+	$notice = ob_get_clean();
+	$expected_notice = $products['with'] > 0
+		? esc_html( sprintf( __( '%1$d of %2$d products use bundles.', 'bundletiers' ), $products['with'], $products['total'] ) )
+		: esc_html__( 'No product uses bundles yet. Open a product, go to Product data, BundleTiers, and tick "Enable bundles".', 'bundletiers' );
+	bt_check( 'the notice says how many products use bundles, or invites to start', false !== strpos( $notice, $expected_notice ), true );
 
 	// The style presets and the live preview.
 	bt_check( 'three layouts are known', Settings::layouts(), array( 'cards', 'list', 'minimal' ) );
