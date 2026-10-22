@@ -177,6 +177,14 @@ class Settings_Page extends \WC_Settings_Page {
 				'id'       => $o . '[style_text]',
 			),
 			array(
+				'title'    => __( 'Savings color', 'bundletiers' ),
+				'type'     => 'color',
+				'default'  => '',
+				'css'      => 'width:6em;',
+				'desc_tip' => __( 'The "you save" pill. Leave empty for the soft green.', 'bundletiers' ),
+				'id'       => $o . '[style_save]',
+			),
+			array(
 				'title'             => __( 'Border width (px)', 'bundletiers' ),
 				'type'              => 'number',
 				'default'           => 1,
@@ -199,6 +207,17 @@ class Settings_Page extends \WC_Settings_Page {
 					'step' => 1,
 				),
 				'id'                => $o . '[style_radius]',
+			),
+			array(
+				'title'    => __( 'On narrow screens', 'bundletiers' ),
+				'type'     => 'select',
+				'default'  => 'stack',
+				'options'  => array(
+					'stack'   => __( 'One tier per row', 'bundletiers' ),
+					'columns' => __( 'Keep the columns', 'bundletiers' ),
+				),
+				'desc_tip' => __( 'Choose "Keep the columns" if your theme lays out the cards itself.', 'bundletiers' ),
+				'id'       => $o . '[narrow]',
 			),
 			array(
 				'type' => 'sectionend',

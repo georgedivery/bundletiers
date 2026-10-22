@@ -28,7 +28,7 @@
 	ready( function () {
 		var root = document.querySelector( '.bt-preview' );
 		var selector = root ? root.querySelector( '.bt-selector' ) : null;
-		var keys = [ 'style', 'style_bg', 'style_border_color', 'style_accent', 'style_text', 'style_border_width', 'style_radius', 'text_save', 'text_per_item' ];
+		var keys = [ 'style', 'style_bg', 'style_border_color', 'style_accent', 'style_text', 'style_save', 'style_border_width', 'style_radius', 'narrow', 'text_save', 'text_per_item' ];
 		var hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 		var presets = {};
 		var prefix;
@@ -98,6 +98,15 @@
 			if ( hex.test( value( 'style_accent' ) ) ) {
 				selector.style.setProperty( '--bt-on-accent', contrast( value( 'style_accent' ) ) );
 			}
+			if ( hex.test( value( 'style_save' ) ) ) {
+				selector.style.setProperty( '--bt-save-text', value( 'style_save' ) );
+				selector.style.setProperty( '--bt-save-bg', 'color-mix(in srgb, ' + value( 'style_save' ) + ' 12%, ' + value( 'style_bg' ) + ')' );
+			} else {
+				selector.style.removeProperty( '--bt-save-text' );
+				selector.style.removeProperty( '--bt-save-bg' );
+			}
+			selector.classList.toggle( 'bt-narrow-columns', 'columns' === value( 'narrow' ) );
+			selector.classList.toggle( 'bt-narrow-stack', 'columns' !== value( 'narrow' ) );
 			selector.style.setProperty( '--bt-border-width', whole( value( 'style_border_width' ), 0, 10, 1 ) + 'px' );
 			selector.style.setProperty( '--bt-radius', whole( value( 'style_radius' ), 0, 40, 4 ) + 'px' );
 			[ 'cards', 'list', 'minimal' ].forEach( function ( name ) {

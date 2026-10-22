@@ -40,6 +40,16 @@ try {
 	bt_check( 'radius too big', Settings::clean_style( 'style_radius', '500' ), 40 );
 	bt_check( 'radius rounds', Settings::clean_style( 'style_radius', '7.6' ), 8 );
 
+	// Savings color: a hex color, or empty for the soft green.
+	bt_check( 'savings color ok', Settings::clean_style( 'style_save', '#B3123B' ), '#B3123B' );
+	bt_check( 'bad savings color -> empty (soft green)', Settings::clean_style( 'style_save', 'red' ), '' );
+	update_option( Settings::OPTION, array( 'style_bg' => '#ffffff', 'style_save' => '#b3123b' ) );
+	bt_check( 'a savings color is printed with a soft background', false !== strpos( Settings::style_css(), '--bt-save-text:#b3123b;--bt-save-bg:color-mix(in srgb,#b3123b 12%,#ffffff);' ), true );
+	update_option( Settings::OPTION, array( 'style_save' => 'javascript:x' ) );
+	bt_check( 'a tampered savings color is not printed', false === strpos( Settings::style_css(), '--bt-save' ), true );
+	delete_option( Settings::OPTION );
+	bt_check( 'the default pill color is not printed', false === strpos( Settings::style_css(), '--bt-save' ), true );
+
 	// Text on the accent color (badge, selected dot): black or white, whichever reads better.
 	foreach ( array( '#111111' => '#ffffff', '#ffffff' => '#111111', '#4f46e5' => '#ffffff', '#cf3450' => '#ffffff', '#facc15' => '#111111', '#818cf8' => '#111111', '#fff' => '#111111', '#000' => '#ffffff', 'zzz' => '#ffffff' ) as $accent => $on ) {
 		bt_check( "text on $accent is $on", Settings::contrast_color( $accent ), $on );
@@ -179,6 +189,16 @@ try {
 		: esc_html__( 'No product uses bundles yet. Open a product, go to Product data, BundleTiers, and tick "Enable bundles".', 'bundletiers' );
 	bt_check( 'the notice says how many products use bundles, or invites to start', false !== strpos( $notice, $expected_notice ), true );
 
+	// On narrow screens: one tier per row, or keep the columns (the theme lays the cards out).
+	$_POST[ Settings::OPTION ] = array( 'narrow' => 'columns' );
+	WC_Admin_Settings::save_fields( $fields );
+	bt_check( 'keep the columns can be saved', get_option( Settings::OPTION )['narrow'] ?? null, 'columns' );
+	$_POST[ Settings::OPTION ] = array( 'narrow' => 'nonsense' );
+	WC_Admin_Settings::save_fields( $fields );
+	bt_check( 'an unknown narrow setting falls back to one tier per row', get_option( Settings::OPTION )['narrow'] ?? null, 'stack' );
+	bt_check( 'the narrow setting is in Appearance', ( $by_field[ Settings::OPTION . '[narrow]' ] ?? array() ), array( 'appearance' ) );
+	bt_check( 'the savings color is in Appearance', ( $by_field[ Settings::OPTION . '[style_save]' ] ?? array() ), array( 'appearance' ) );
+
 	// The style presets and the live preview.
 	bt_check( 'three layouts are known', Settings::layouts(), array( 'cards', 'list', 'minimal' ) );
 	foreach ( Settings::presets() as $id => $preset ) {
@@ -192,7 +212,7 @@ try {
 	bt_check( 'an unknown layout falls back to cards', get_option( Settings::OPTION )['style'] ?? null, 'cards' );
 	bt_check( 'three style presets exist', array_keys( Settings::presets() ), array( 'cards', 'list', 'minimal' ) );
 	foreach ( Settings::presets() as $id => $preset ) {
-		bt_check( "preset $id sets every style field", array_keys( $preset['values'] ), array( 'style', 'style_bg', 'style_border_color', 'style_accent', 'style_text', 'style_border_width', 'style_radius' ) );
+		bt_check( "preset $id sets every style field", array_keys( $preset['values'] ), array( 'style', 'style_bg', 'style_border_color', 'style_accent', 'style_text', 'style_save', 'style_border_width', 'style_radius' ) );
 		foreach ( array( 'style_bg', 'style_border_color', 'style_accent' ) as $key ) {
 			bt_check( "preset $id $key is a valid color", Settings::clean_style( $key, $preset['values'][ $key ] ), $preset['values'][ $key ] );
 		}

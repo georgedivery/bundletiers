@@ -494,3 +494,27 @@ msgstr ""
 #: includes/class-settings-page.php
 msgid "Border of the cards that are not selected."
 msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Savings color"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "The \"you save\" pill. Leave empty for the soft green."
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "On narrow screens"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "One tier per row"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Keep the columns"
+msgstr ""
+
+#: includes/class-settings-page.php
+msgid "Choose \"Keep the columns\" if your theme lays out the cards itself."
+msgstr ""

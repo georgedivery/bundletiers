@@ -12,6 +12,7 @@ All notable changes to BundleTiers are listed here. The format follows
 - First-run steps ("Start in three steps") that stay until they are hidden, and a notice that says how many products use bundles or invites you to switch them on.
 - Style presets (Cards, List, Minimal) and a live preview of the cards that follows the colors, border, corners, text color, texts and layout as you change them.
 - A text color setting. Leave it empty to keep the color of your theme.
+- A savings color setting for the "you save" pill (empty keeps the soft green), and an "On narrow screens" setting: one tier per row (the default) or keep the columns, for themes that lay the cards out themselves.
 - Short hints under the settings fields, and a tier editor that fits a narrow screen (each tier becomes a block).
 - In narrow places (a side column, a small phone) the tiers show one per row.
 - The `bundletiers_base_price` filter (the price a bundle discount starts from) and the `bundletiers_tax_factor` filter.

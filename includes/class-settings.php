@@ -54,8 +54,10 @@ class Settings {
 			'style_border_color' => '#d5d7dd',
 			'style_accent'       => '#111111',
 			'style_text'         => '',
+			'style_save'         => '',
 			'style_border_width' => 1,
 			'style_radius'       => 4,
+			'narrow'             => 'stack',
 			'text_save'          => __( 'You save', 'bundletiers' ),
 			'text_per_item'      => __( 'per item', 'bundletiers' ),
 			'text_cart_label'    => __( 'Bundle', 'bundletiers' ),
@@ -88,6 +90,7 @@ class Settings {
 					'style_border_color' => '#e2e4ea',
 					'style_accent'       => '#4f46e5',
 					'style_text'         => '#1f2937',
+					'style_save'         => '',
 					'style_border_width' => 1,
 					'style_radius'       => 14,
 				),
@@ -100,6 +103,7 @@ class Settings {
 					'style_border_color' => '#e2e4ea',
 					'style_accent'       => '#0f6e56',
 					'style_text'         => '#1f2937',
+					'style_save'         => '',
 					'style_border_width' => 1,
 					'style_radius'       => 12,
 				),
@@ -112,6 +116,7 @@ class Settings {
 					'style_border_color' => '#d5d7dd',
 					'style_accent'       => '#111111',
 					'style_text'         => '',
+					'style_save'         => '',
 					'style_border_width' => 1,
 					'style_radius'       => 4,
 				),
@@ -151,7 +156,7 @@ class Settings {
 	/**
 	 * Cleans one style setting: a hex color, or a whole number inside its range.
 	 *
-	 * @param string $key   Setting key (style_bg, style_border_color, style_accent, style_text, style_border_width, style_radius).
+	 * @param string $key   Setting key (style_bg, style_border_color, style_accent, style_text, style_save, style_border_width, style_radius).
 	 * @param mixed  $value Raw value.
 	 * @return string|int Valid value, or the default when the input is not valid.
 	 */
@@ -207,6 +212,11 @@ class Settings {
 		$text   = self::clean_style( 'style_text', self::get( 'style_text' ) );
 		// With a text color set, the softer lines (old price, per item) are that color faded into the card.
 		$text_css = $text ? sprintf( '--bt-text:%1$s;--bt-muted:color-mix(in srgb,%1$s 62%%,%2$s);', $text, $bg ) : '';
+		// A savings color turns the "you save" pill into a soft version of that color.
+		$save = self::clean_style( 'style_save', self::get( 'style_save' ) );
+		if ( $save ) {
+			$text_css .= sprintf( '--bt-save-text:%1$s;--bt-save-bg:color-mix(in srgb,%1$s 12%%,%2$s);', $save, $bg );
+		}
 		return sprintf(
 			'.bt-selector{--bt-bg:%1$s;--bt-border:%2$s;--bt-accent:%3$s;--bt-border-width:%4$dpx;--bt-radius:%5$dpx;--bt-on-accent:%6$s;%7$s}',
 			$bg,
@@ -395,7 +405,7 @@ class Settings {
 	 * @return mixed
 	 */
 	public function sanitize_option( $value, $option, $raw_value ) {
-		foreach ( array( 'style_bg', 'style_border_color', 'style_accent', 'style_text', 'style_border_width', 'style_radius' ) as $style_key ) {
+		foreach ( array( 'style_bg', 'style_border_color', 'style_accent', 'style_text', 'style_save', 'style_border_width', 'style_radius' ) as $style_key ) {
 			if ( self::OPTION . '[' . $style_key . ']' === $option['id'] ) {
 				return self::clean_style( $style_key, $raw_value );
 			}
