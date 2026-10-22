@@ -246,7 +246,8 @@ class Settings {
 	 * @param array $field Field definition.
 	 */
 	public function output_tiers_field( $field ) {
-		echo '<tr valign="top"><th scope="row" class="titledesc"><label>' . esc_html( $field['title'] ) . '</label></th><td class="forminp">';
+		// One full-width cell: the label on top and the table under it, not squeezed into half the row.
+		echo '<tr valign="top"><td colspan="2" class="bt-tiers-cell"><span class="bt-field-title">' . esc_html( $field['title'] ) . '</span>';
 		Tiers_Editor::render( $field['id'], self::get( 'tiers' ) );
 		echo '</td></tr>';
 	}

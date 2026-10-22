@@ -161,6 +161,14 @@ try {
 	$status_html = ob_get_clean();
 	bt_check( 'the Status table has a row per fact', substr_count( $status_html, '<th scope="row">' ), count( $rows ) );
 
+	// The tiers table sits under its label in one full-width cell.
+	ob_start();
+	( new Settings() )->output_tiers_field( array( 'title' => 'Tiers', 'id' => Settings::OPTION . '[tiers]' ) );
+	$tiers_html = ob_get_clean();
+	bt_check( 'the tiers editor is in a full-width cell', false !== strpos( $tiers_html, 'colspan="2" class="bt-tiers-cell"' ) && false !== strpos( $tiers_html, 'class="bt-editor"' ), true );
+	bt_check( 'the label comes before the table', strpos( $tiers_html, 'bt-field-title' ) < strpos( $tiers_html, '<table' ), true );
+	bt_check( 'the tiers row has no two-column heading cell', false === strpos( $tiers_html, 'class="titledesc"' ), true );
+
 	// First-run steps and the products notice.
 	$settings_obj = new Settings();
 	delete_option( Settings::INTRO_OPTION );
