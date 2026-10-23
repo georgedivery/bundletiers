@@ -61,11 +61,30 @@ jobs:
         run: npx --yes @wordpress/env@10 start
       - name: Run the scenarios
         run: |
-          set -e
           SLUG=$(basename "$GITHUB_WORKSPACE")
-          npx @wordpress/env@10 run cli wp plugin list
+          WPENV="npx @wordpress/env@10 run cli"
+          {
+            echo '### WooCommerce scenarios'
+            echo '```'
+            $WPENV wp plugin list 2>&1 || true
+            $WPENV wp eval 'echo "home_url: " . home_url() . " | locale: " . get_locale() . " | WooCommerce " . WC()->version . "\n";' 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          status=0
           for scenario in cart quantity simple-product settings tax uninstall; do
             echo "== $scenario"
-            npx @wordpress/env@10 run cli wp eval-file "wp-content/plugins/$SLUG/tests/$scenario-scenarios.php" | tee "/tmp/$scenario.log"
-            grep -q "checks passed" "/tmp/$scenario.log"
+            if $WPENV wp eval-file "wp-content/plugins/$SLUG/tests/$scenario-scenarios.php" > "/tmp/$scenario.log" 2>&1 && grep -q "checks passed" "/tmp/$scenario.log"; then
+              result="passed"
+            else
+              result="FAILED"
+              status=1
+            fi
+            cat "/tmp/$scenario.log"
+            {
+              echo "**$scenario: $result**"
+              echo '```'
+              tail -n 30 "/tmp/$scenario.log"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
           done
+          exit $status
