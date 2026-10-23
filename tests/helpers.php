@@ -4,11 +4,11 @@
  */
 
 /**
- * Stops the script unless the site is a local development site (.local, .test, .localhost or local.*).
+ * Stops the script unless the site is a local development site (.local, .test, .localhost, local.* or plain localhost).
  */
 function bt_require_local_site() {
 	$host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-	if ( ! preg_match( '/(\.(local|test|localhost)|^local\..+)$/', $host ) ) {
+	if ( ! preg_match( '/(\.(local|test|localhost)|^local\..+|^localhost)$/', $host ) ) {
 		WP_CLI::error( 'Refusing to run: this is not a local site.' );
 	}
 

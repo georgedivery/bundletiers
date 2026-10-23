@@ -11,3 +11,7 @@ vendor
 screenshot.png
 docs
 README.md
+.github
+.wp-env.json
+composer.json
+composer.lock

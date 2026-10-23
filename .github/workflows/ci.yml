@@ -1,0 +1,71 @@
+name: CI
+
+# Light checks on every push to dev, staging and main (and on pull requests into staging and main).
+# staging goes to main only when this is green and the scenarios pass on the three local sites.
+on:
+  push:
+    branches: [ dev, staging, main ]
+  pull_request:
+    branches: [ staging, main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Coding standard (PHPCS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: vendor/bin/phpcs
+
+  unit:
+    name: Price maths and JS parity (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4', '8.1', '8.3', '8.4' ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: php tests/pricing-test.php
+      - run: php tests/js-parity-test.php
+
+  scenarios:
+    name: WooCommerce scenarios (clean site)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Start a clean WordPress with WooCommerce and the plugin
+        run: npx --yes @wordpress/env@10 start
+      - name: Run the scenarios
+        run: |
+          set -e
+          SLUG=$(basename "$GITHUB_WORKSPACE")
+          npx @wordpress/env@10 run cli wp plugin list
+          for scenario in cart quantity simple-product settings tax uninstall; do
+            echo "== $scenario"
+            npx @wordpress/env@10 run cli wp eval-file "wp-content/plugins/$SLUG/tests/$scenario-scenarios.php" | tee "/tmp/$scenario.log"
+            grep -q "checks passed" "/tmp/$scenario.log"
+          done
