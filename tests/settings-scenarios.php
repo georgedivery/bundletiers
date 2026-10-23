@@ -77,7 +77,8 @@ try {
 
 	// Saving through the real WooCommerce settings screen code path.
 	delete_option( Settings::OPTION );
-	require_once WP_PLUGIN_DIR . '/woocommerce/includes/admin/class-wc-admin-settings.php';
+	// WC_ABSPATH is where WooCommerce really is (a test site may keep it in a folder with another name).
+	require_once WC_ABSPATH . 'includes/admin/class-wc-admin-settings.php';
 	new Settings(); // Registers the save filter (normally loaded only in wp-admin).
 	$page   = new BundleTiers\Settings_Page();
 	$fields   = array();
