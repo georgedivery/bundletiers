@@ -1,0 +1,94 @@
+name: Deploy
+
+# Sends the plugin to bundletiers.com after CI is green on main.
+# The production environment waits for the owner's approval before anything is written.
+# Only the plugin folder on the server is touched; the same hosting account holds other sites.
+on:
+  workflow_run:
+    workflows: [ CI ]
+    types: [ completed ]
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  DEPLOY_HOST: 198.177.120.61
+  DEPLOY_PORT: '21098'
+  DEPLOY_USER: georrdim
+  DEPLOY_PATH: /home/georrdim/bundletiers.com/wp-content/plugins/bundletiers/
+  # Server host key, checked on every connection (same fingerprint as the owner's Mac: SHA256:252eS8k0lImUx1946oKDfhLUbRgpfQgKoozKhYolYwg).
+  DEPLOY_KNOWN_HOST: '[198.177.120.61]:21098 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFzUIa3wINYb7Nd++RMN3bpYjrFG4nkl8YlXshkvMsVl'
+  # true = only list what would change on the server. Set to false once the list has been checked.
+  DRY_RUN: 'true'
+
+jobs:
+  deploy:
+    name: Plugin to bundletiers.com
+    # A green CI run from a push to main, or a manual run started on main.
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+      || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://bundletiers.com/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Build the package (same files as the ZIP, by .distignore)
+        run: |
+          PACKAGE="$RUNNER_TEMP/package"
+          mkdir -p "$PACKAGE"
+          rsync -a --exclude=.git --exclude-from=.distignore ./ "$PACKAGE/"
+          test -f "$PACKAGE/bundletiers.php"
+          echo "PACKAGE=$PACKAGE" >> "$GITHUB_ENV"
+          {
+            echo "### Package from \`$(git rev-parse --short HEAD)\`"
+            echo '```'
+            ls -A "$PACKAGE"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Set up SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          test -n "$DEPLOY_SSH_KEY" || { echo "::error::Secret DEPLOY_SSH_KEY is missing in the production environment."; exit 1; }
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOST" > ~/.ssh/known_hosts
+
+      - name: Send to the server
+        run: |
+          case "$DEPLOY_PATH" in
+            */bundletiers.com/wp-content/plugins/bundletiers/) ;;
+            *) echo "::error::Unexpected DEPLOY_PATH $DEPLOY_PATH"; exit 1 ;;
+          esac
+          FLAGS="-rltz --checksum --delete --chmod=D755,F644 --itemize-changes"
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+            echo "Dry run: nothing is written on the server."
+          fi
+          rsync $FLAGS \
+            -e "ssh -p $DEPLOY_PORT -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+            "$PACKAGE/" "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH" | tee "$RUNNER_TEMP/rsync.log"
+          {
+            if [ "$DRY_RUN" = "true" ]; then echo '### Dry run: what would change'; else echo '### Changes on the server'; fi
+            echo '```'
+            cat "$RUNNER_TEMP/rsync.log"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
