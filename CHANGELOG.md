@@ -6,6 +6,10 @@ All notable changes to BundleTiers are listed here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-24
+
+First stable release.
+
 ### Added
 - The settings are split into five sections: General, Appearance, Behavior, Texts and Status.
 - A Status section with the versions of BundleTiers, WooCommerce, WordPress and PHP, the active theme (block or classic), how the cart and checkout pages are built (blocks or shortcode), order storage (HPOS), how prices and tax are set, and how many products use bundles. Nothing is sent anywhere.
