@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.1.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,9 @@ By default a coupon applies on top of the bundle price. You can turn coupons off
 Nothing, unless you tick "Delete data on uninstall" in the settings. Bundle details already saved on past order lines are always kept.
 
 == Changelog ==
+
+= 1.0.0 =
+* First stable release. Settings in five sections (General, Appearance, Behavior, Texts, Status), style presets with a live preview, exact prices with and without tax, block and shortcode cart and checkout, accessibility improvements.
 
 = 0.1.0 =
 * First development version.
