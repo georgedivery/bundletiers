@@ -18,12 +18,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DEPLOY_HOST: 198.177.120.61
-  DEPLOY_PORT: '21098'
-  DEPLOY_USER: georrdim
-  DEPLOY_PATH: /home/georrdim/bundletiers.com/wp-content/plugins/bundletiers/
-  # Server host key, checked on every connection (same fingerprint as the owner's Mac: SHA256:252eS8k0lImUx1946oKDfhLUbRgpfQgKoozKhYolYwg).
-  DEPLOY_KNOWN_HOST: '[198.177.120.61]:21098 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFzUIa3wINYb7Nd++RMN3bpYjrFG4nkl8YlXshkvMsVl'
   # true = only list what would change on the server (the first run on 24.10.2026 was checked this way).
   DRY_RUN: 'false'
 
@@ -39,7 +33,25 @@ jobs:
     environment:
       name: production
       url: https://bundletiers.com/
+    # Server details live in the production environment variables, not in this public file.
+    # DEPLOY_KNOWN_HOST is the server host key line, checked on every connection
+    # (fingerprint SHA256:252eS8k0lImUx1946oKDfhLUbRgpfQgKoozKhYolYwg, same as on the owner's Mac).
+    env:
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      DEPLOY_KNOWN_HOST: ${{ vars.DEPLOY_KNOWN_HOST }}
     steps:
+      - name: Check the production variables
+        run: |
+          for name in DEPLOY_HOST DEPLOY_PORT DEPLOY_USER DEPLOY_PATH DEPLOY_KNOWN_HOST; do
+            test -n "${!name}" || { echo "::error::Variable $name is missing in the production environment."; exit 1; }
+          done
+          # Keep the host and the user out of the public logs.
+          echo "::add-mask::$DEPLOY_HOST"
+          echo "::add-mask::$DEPLOY_USER"
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
