@@ -1,5 +1,5 @@
 === BundleTiers – Bundle Discounts for WooCommerce ===
-Contributors: webbeb
+Contributors: webbeblabs, divery
 Tags: woocommerce, bundle, quantity discount, tiered pricing, volume discount
 Requires at least: 6.5
 Tested up to: 7.1
@@ -36,6 +36,14 @@ Bundles are off by default and are switched on per product (Product data → Bun
 **How the tier is chosen**
 
 The tier follows the total quantity in the cart, not a saved choice. Changing the quantity on the cart page updates the discount straight away.
+
+**Privacy**
+
+BundleTiers does not connect to any external service, does not track visitors and does not collect or send any data. Everything runs inside your own WordPress site.
+
+**Source code**
+
+Development happens on GitHub: https://github.com/webbeblabs/bundletiers
 
 == Installation ==
 
