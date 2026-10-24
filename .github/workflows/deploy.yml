@@ -24,8 +24,8 @@ env:
   DEPLOY_PATH: /home/georrdim/bundletiers.com/wp-content/plugins/bundletiers/
   # Server host key, checked on every connection (same fingerprint as the owner's Mac: SHA256:252eS8k0lImUx1946oKDfhLUbRgpfQgKoozKhYolYwg).
   DEPLOY_KNOWN_HOST: '[198.177.120.61]:21098 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFzUIa3wINYb7Nd++RMN3bpYjrFG4nkl8YlXshkvMsVl'
-  # true = only list what would change on the server. Set to false once the list has been checked.
-  DRY_RUN: 'true'
+  # true = only list what would change on the server (the first run on 24.10.2026 was checked this way).
+  DRY_RUN: 'false'
 
 jobs:
   deploy:
